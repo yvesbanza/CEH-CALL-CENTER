@@ -6,8 +6,8 @@
 <title>CEH - Espace Agent</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
-body{background:#080808;color:#fff;padding:20px}
-.card{background:#111;border:1px solid #222;border-radius:16px;padding:20px;max-width:500px;margin:40px auto}
+body{background:#080808;color:#fff;padding:20px;display:flex;flex-direction:column;align-items:center}
+.card{background:#111;border:1px solid #222;border-radius:16px;padding:20px;max-width:500px;width:100%;margin-top:20px}
 .btn{padding:14px 20px;border-radius:10px;border:none;font-weight:700;cursor:pointer;width:100%;margin-top:12px}
 .btn-green{background:#00FF88;color:#000}
 .btn-red{background:#1a1a1a;color:#ff4444;border:1px solid #333}
@@ -15,11 +15,16 @@ select{width:100%;padding:12px;background:#0a0a0a;border:1px solid #222;border-r
 .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
 #callScreen{display:none;position:fixed;inset:0;background:#000;z-index:100;flex-direction:column;align-items:center;justify-content:center}
 #callScreen.active{display:flex}
+.logo-agent{width:180px;object-fit:contain;margin:18px 0 8px 0}
 </style>
 </head>
 <body>
-<h2 style="text-align:center;margin-top:20px">CEH - Espace Agent</h2>
-<p style="text-align:center;color:#666;font-size:13px;margin-top:6px">Les fidèles ne voient JAMAIS votre numéro perso</p>
+<h2 style="margin-top:20px">CEH - Espace Agent</h2>
+<p style="color:#666;font-size:13px;margin-top:6px;text-align:center">Les fidèles ne voient JAMAIS votre numéro perso</p>
+
+<!-- LOGO AJOUTÉ ICI -->
+<img src="ceh_logo.png" alt="CEH" class="logo-agent">
+
 <div class="card">
 <label>Choisissez votre poste</label>
 <select id="agentSelect">
