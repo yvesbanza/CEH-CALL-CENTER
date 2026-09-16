@@ -6,37 +6,37 @@
 <title>CEH - Espace Agent</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
-body{background:#080808;color:#fff;padding:12px;display:flex;flex-direction:column;align-items:center}
+body{background:#080808;color:#fff;padding:12px;display:flex;flex-direction:column;align-items:center;min-height:100vh}
 h2{font-size:20px;margin-top:8px}
 .sub{color:#666;font-size:12px;margin-top:4px;text-align:center}
-.logo-mid{width:48vw;max-width:180px;height:auto;margin:10px 0}
+.logo-mid{width:48vw;max-width:180px;height:auto;object-fit:contain;margin:10px 0}
 .card{background:#111;border:1px solid #222;border-radius:16px;padding:16px;max-width:500px;width:100%;margin-top:8px}
-.btn{padding:14px 20px;border-radius:10px;border:none;font-weight:700;cursor:pointer;width:100%;margin-top:10px;font-size:14px}
+.btn{padding:12px 20px;border-radius:10px;border:none;font-weight:700;cursor:pointer;width:100%;margin-top:10px;font-size:14px}
 .btn-green{background:#00FF88;color:#000}
 .btn-red{background:#1a1a1a;color:#ff4444;border:1px solid #333}
-select{width:100%;padding:10px;background:#0a0a0a;border:1px solid #222;border-radius:10px;color:#fff;margin-top:6px}
-.dot{width:10px;height:10px;border-radius:50%;display:inline-block;background:#666}
+select{width:100%;padding:10px;background:#0a0a0a;border:1px solid #222;border-radius:10px;color:#fff;margin-top:6px;font-size:14px}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
 #callScreen{display:none;position:fixed;inset:0;background:#000;z-index:100;flex-direction:column;align-items:center;justify-content:center}
 #callScreen.active{display:flex}
-#log{background:#0a0a0a;border:1px solid #222;border-radius:8px;padding:8px;margin-top:10px;font-size:11px;color:#aaa;width:100%;max-height:100px;overflow:auto;white-space:pre-wrap}
 </style>
 </head>
 <body>
 <h2>CEH - Espace Agent</h2>
 <p class="sub">Les fidèles ne voient JAMAIS votre numéro perso</p>
-<img src="ceh_logo.png?v=104" class="logo-mid" alt="CEH">
+
+<img src="ceh_logo.png?v=101" class="logo-mid" alt="CEH">
 
 <div class="card">
+<label style="font-size:14px">Choisissez votre poste</label>
 <select id="agentSelect">
 <option value="ceh-agent-101">Agent 101 - Yves Banza (Superviseur)</option>
 <option value="ceh-agent-102">Agent 102 - +243 896 027 250</option>
 <option value="ceh-agent-103">Agent 103 - +243 999 056 257</option>
 </select>
-<div style="margin-top:12px;display:flex;align-items:center;gap:8px"><span id="dot" class="dot"></span><span id="status">Hors ligne</span></div>
-<button class="btn btn-green" id="btnOn">✅ Se mettre en ligne</button>
-<button class="btn btn-red" id="btnOff">Se déconnecter</button>
-<p style="color:#444;font-size:10px;margin-top:10px">ID Peer: <span id="peerId">-</span></p>
-<div id="log">Journal: prêt</div>
+<div style="margin-top:12px;display:flex;align-items:center;gap:8px;font-size:14px"><span id="dot" class="dot" style="background:#666"></span><span id="status">Hors ligne</span></div>
+<button class="btn btn-green" onclick="goOnline()">✅ Se mettre en ligne</button>
+<button class="btn btn-red" onclick="goOffline()">Se déconnecter</button>
+<p style="color:#444;font-size:10px;margin-top:12px">ID Peer: <span id="peerId">-</span><br>Gardez cette page ouverte pour recevoir les appels.</p>
 </div>
 
 <div id="callScreen">
@@ -44,92 +44,23 @@ select{width:100%;padding:10px;background:#0a0a0a;border:1px solid #222;border-r
 <p id="callerInfo" style="color:#888;margin-top:10px">Fidèle CEH</p>
 <audio id="remoteAudio" autoplay></audio>
 <div style="display:flex;gap:20px;margin-top:40px">
-<button class="btn btn-green" style="width:70px;height:70px;border-radius:50%" id="btnAns">✓</button>
-<button class="btn btn-red" style="width:70px;height:70px;border-radius:50%" id="btnDec">✕</button>
+<button class="btn btn-green" style="width:70px;height:70px;border-radius:50%;font-size:24px" onclick="answerCall()">✓</button>
+<button class="btn btn-red" style="width:70px;height:70px;border-radius:50%;font-size:20px" onclick="declineCall()">✕</button>
 </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.2/dist/peerjs.min.js"></script>
+<script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <script>
 let peer=null,incomingCall=null,localStream=null;
-const logBox=document.getElementById('log');
-const statusEl=document.getElementById('status');
-const dotEl=document.getElementById('dot');
-const peerIdEl=document.getElementById('peerId');
-
-function addLog(t){logBox.textContent+="\n- "+t; console.log(t);}
-
-const PEER_SERVERS = [
-  {host:'0.peerjs.com', port:443, secure:true, path:'/'}, // serveur 1
-  {host:'peer.9k1.de', port:443, secure:true, path:'/myapp'}, // serveur 2 secours EU
-  {host:'peerjs.92k.de', port:443, secure:true, path:'/myapp'} // serveur 3 secours
-];
-
-async function tryConnect(id, serverIndex=0){
-  if(serverIndex>=PEER_SERVERS.length){
-    addLog("❌ Tous les serveurs échoués. Passe en WiFi ou VPN");
-    statusEl.textContent="Échec réseau - Activez VPN/WiFi";
-    alert("Réseau Vodacom/Airtel bloque les appels. Activez un VPN gratuit (1.1.1.1) puis réessayez. Ça va passer direct.");
-    return;
-  }
-  const cfg=PEER_SERVERS[serverIndex];
-  addLog("Essai serveur "+(serverIndex+1)+": "+cfg.host);
-
-  peer=new Peer(id, {
-    host: cfg.host,
-    port: cfg.port,
-    secure: cfg.secure,
-    path: cfg.path,
-    debug:1,
-    config:{ iceServers:[{urls:'stun:stun.l.google.com:19302'}, {urls:'stun:stun1.l.google.com:19302'}] }
-  });
-
-  peer.on('open', myId=>{
-    addLog("✅ CONNECTÉ via "+cfg.host+" ID: "+myId);
-    peerIdEl.textContent=myId;
-    statusEl.textContent="✅ EN LIGNE via serveur "+(serverIndex+1);
-    dotEl.style.background="#00FF88";
-  });
-
-  peer.on('error', err=>{
-    addLog("Erreur "+cfg.host+": "+err.type);
-    if(err.type==='network' || err.type==='server-error' || err.type==='socket-error'){
-      addLog("Serveur "+cfg.host+" inaccessible, on tente le suivant...");
-      try{peer.destroy();}catch(e){}
-      setTimeout(()=>tryConnect(id, serverIndex+1), 1000);
-    }else if(err.type==='unavailable-id'){
-      addLog("ID déjà pris");
-      statusEl.textContent="ID déjà pris ailleurs";
-    }else{
-      statusEl.textContent="Erreur: "+err.type;
-    }
-  });
-
-  peer.on('call', call=>{
-    addLog("📞 Appel de "+call.peer);
-    incomingCall=call;
-    document.getElementById('callScreen').classList.add('active');
-    document.getElementById('callerInfo').textContent="Fidèle: "+call.peer;
-  });
+async function goOnline(){
+  const id=document.getElementById('agentSelect').value;
+  peer=new Peer(id);
+  peer.on('open',i=>{document.getElementById('peerId').textContent=i;document.getElementById('status').textContent="En ligne";document.getElementById('dot').style.background="#00FF88";});
+  peer.on('call',async call=>{incomingCall=call;document.getElementById('callScreen').classList.add('active');try{localStream=await navigator.mediaDevices.getUserMedia({audio:true});}catch(e){alert("Autorisez micro");}});
 }
-
-document.getElementById('btnOn').onclick=async()=>{
-  const wantedId=document.getElementById('agentSelect').value;
-  addLog("Clic En Ligne: "+wantedId);
-  statusEl.textContent="Demande micro...";
-  try{
-    localStream=await navigator.mediaDevices.getUserMedia({audio:true});
-    addLog("Micro OK");
-  }catch(e){
-    addLog("Micro refusé"); alert("Autorisez le micro"); return;
-  }
-  statusEl.textContent="Connexion...";
-  tryConnect(wantedId,0);
-};
-
-document.getElementById('btnOff').onclick=()=>{ if(peer)peer.destroy(); statusEl.textContent="Hors ligne"; dotEl.style.background="#666"; addLog("Déconnecté"); };
-document.getElementById('btnAns').onclick=()=>{ if(!incomingCall)return; incomingCall.answer(localStream); incomingCall.on('stream', s=>{document.getElementById('remoteAudio').srcObject=s;}); addLog("Décroché"); };
-document.getElementById('btnDec').onclick=()=>{ if(incomingCall)incomingCall.close(); document.getElementById('callScreen').classList.remove('active'); addLog("Refusé"); };
+function goOffline(){if(peer)peer.destroy();document.getElementById('status').textContent="Hors ligne";document.getElementById('dot').style.background="#666";}
+async function answerCall(){incomingCall.answer(localStream);incomingCall.on('stream',s=>{document.getElementById('remoteAudio').srcObject=s;});}
+function declineCall(){if(incomingCall)incomingCall.close();document.getElementById('callScreen').classList.remove('active');}
 </script>
 </body>
-  </html>
+</html>
