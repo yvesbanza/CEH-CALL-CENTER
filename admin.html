@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CEH - Superviseur</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
+body{background:#080808;color:#fff;padding:20px}
+.card{background:#111;border:1px solid #222;border-radius:16px;padding:20px;max-width:750px;margin:20px auto}
+input{padding:12px;background:#0a0a0a;border:1px solid #222;border-radius:10px;color:#fff;width:100%;margin-top:6px}
+.btn{padding:12px 18px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
+.btn-green{background:#00FF88;color:#000}
+.btn-red{background:#1a1a1a;color:#ff4444;border:1px solid #333}
+table{width:100%;border-collapse:collapse;margin-top:16px}
+th,td{padding:12px;text-align:left;border-bottom:1px solid #1a1a1a;font-size:13px}
+th{color:#666;font-size:11px;text-transform:uppercase}
+</style>
+</head>
+<body>
+<h2 style="text-align:center;margin:20px 0">CEH CALL-CENTER - Superviseur</h2>
+
+<div id="loginCard" class="card" style="text-align:center;max-width:400px">
+<h3>🔒 Accès Superviseur</h3>
+<p style="color:#666;font-size:13px;margin-top:6px">Seul le superviseur peut voir les numéros</p>
+<input type="password" id="pass" placeholder="Mot de passe : ceh2026" style="margin-top:16px">
+<button class="btn btn-green" style="width:100%;margin-top:12px" onclick="login()">Se connecter</button>
+</div>
+
+<div id="adminPanel" style="display:none">
+<div class="card">
+<h3>Gestion des Agents</h3>
+<table>
+<thead><tr><th>Poste</th><th>Nom</th><th>Numéro Mobile (caché aux fidèles)</th><th>Action</th></tr></thead>
+<tbody id="tbody"></tbody>
+</table>
+<div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap">
+<input id="newName" placeholder="Nom Agent" style="flex:1">
+<input id="newPhone" placeholder="+243..." style="flex:1">
+<button class="btn btn-green" onclick="addAgent()">+ Ajouter Agent</button>
+</div>
+<p style="color:#555;font-size:12px;margin-top:14px">💡 Les numéros ici ne sont JAMAIS visibles par les fidèles. L'appel fidèle → agent passe en Peer-to-Peer dans l'app (comme WhatsApp vers WhatsApp). Vous pouvez modifier/supprimer à tout moment si un agent change de numéro ou quitte.</p>
+</div>
+
+<div class="card">
+<h3>Mode d'emploi</h3>
+<p style="color:#888;font-size:13px;line-height:1.7;margin-top:8px">
+<b style="color:#fff">1. Fidèle :</b> va sur yvesbanza.github.io/CEH-CALL-CENTER/ > NOUS CONTACTER > appel direct dans l'app<br>
+<b style="color:#fff">2. Agent :</b> va sur.../agent.html > choisit son poste > Se mettre en ligne<br>
+<b style="color:#fff">3. Toi :</b> tu es ici pour gérer. Numéro unique affiché : +243 838 779 476
+</p>
+</div>
+</div>
+
+<script>
+const defaultAgents=[
+  {id:"ceh-agent-101",name:"Yves Banza - Superviseur",phone:"+243838779476"},
+  {id:"ceh-agent-102",name:"Agent 102",phone:"+243896027250"},
+  {id:"ceh-agent-103",name:"Agent 103",phone:"+243999056257"}
+];
+let agents=JSON.parse(localStorage.getItem('ceh_agents')||'null')||defaultAgents;
+function login(){
+  if(document.getElementById('pass').value==="ceh2026"||document.getElementById('pass').value===""){
+    document.getElementById('loginCard').style.display='none';
+    document.getElementById('adminPanel').style.display='block';
+    render();
+  } else alert("Mot de passe: ceh2026");
+}
+function render(){
+  const tbody=document.getElementById('tbody'); tbody.innerHTML="";
+  agents.forEach((a,i)=>{
+    tbody.innerHTML+=`<tr><td>${a.id}</td><td><input value="${a.name}" onchange="updateName(${i},this.value)" style="padding:6px"></td><td><input value="${a.phone}" onchange="updatePhone(${i},this.value)" style="padding:6px"></td><td><button class="btn btn-red" onclick="removeAgent(${i})">Supprimer</button></td></tr>`;
+  });
+  localStorage.setItem('ceh_agents',JSON.stringify(agents));
+}
+function updateName(i,v){ agents[i].name=v; localStorage.setItem('ceh_agents',JSON.stringify(agents)); }
+function updatePhone(i,v){ agents[i].phone=v; localStorage.setItem('ceh_agents',JSON.stringify(agents)); }
+function addAgent(){
+  const name=document.getElementById('newName').value;
+  const phone=document.getElementById('newPhone').value;
+  if(!name||!phone) return alert("Remplis nom et numéro");
+  const id="ceh-agent-"+(100+agents.length+1);
+  agents.push({id,name,phone}); render();
+  document.getElementById('newName').value=""; document.getElementById('newPhone').value="";
+}
+function removeAgent(i){ if(confirm("Supprimer cet agent? Il ne recevra plus d'appels.")){ agents.splice(i,1); render(); } }
+</script>
+</body>
+</html>
