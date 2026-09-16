@@ -4,71 +4,52 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>CEH CALL-CENTER</title>
-<meta name="theme-color" content="#000000">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
-body{background:#000;color:#fff;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
-.logo-img{width:240px;height:240px;object-fit:contain}
-.btn-contact{margin-top:50px;background:#fff;color:#000;border:none;padding:18px 55px;border-radius:14px;font-weight:800;font-size:18px;cursor:pointer;letter-spacing:.5px;box-shadow:0 10px 30px rgba(255,255,255,.15)}
-.btn-contact.calling{background:#00FF88}
-.unique-number{margin-top:22px;color:#666;font-size:14px;letter-spacing:1px}
-.unique-number b{color:#aaa}
-.status{margin-top:12px;font-size:13px;color:#00FF88;min-height:18px}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
+body{background:#000;color:#fff;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.logo-img{width:85vw;max-width:380px;max-height:60vh;object-fit:contain}
+.btn{margin-top:35px;background:#fff;color:#000;border:none;padding:18px 55px;border-radius:14px;font-weight:800;font-size:18px;cursor:pointer;box-shadow:0 10px 30px rgba(255,255,255,.15)}
+.num{margin-top:20px;color:#888;font-size:14px;letter-spacing:1px}
+.num b{color:#aaa}
+.status{margin-top:10px;color:#00FF88;font-size:13px;min-height:18px}
 .call-ui{display:none;position:fixed;inset:0;background:#000;z-index:100;flex-direction:column;align-items:center;justify-content:center}
 .call-ui.active{display:flex}
-.avatar{width:120px;height:120px;background:#111;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:50px;margin-bottom:20px;border:2px solid #222}
-.pulse{animation:pulse 1.5s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(0,255,136,.6)}70%{box-shadow:0 0 0 20px rgba(0,255,136,0)}100%{box-shadow:0 0 0 0 rgba(0,255,136,0)}}
 .hangup{margin-top:40px;background:#ff2d2d;color:#fff;border:none;width:70px;height:70px;border-radius:50%;font-size:28px;cursor:pointer}
 </style>
 </head>
 <body>
-<img src="logo.png" alt="CEH CALL-CENTER" class="logo-img">
-<button id="contactBtn" class="btn-contact" onclick="startCall()">NOUS CONTACTER</button>
-<div class="unique-number">+243 838 779 476</div>
+
+<img src="ceh_logo.png" alt="CEH CALL-CENTER" class="logo-img">
+
+<button id="btn" class="btn" onclick="startCall()">NOUS CONTACTER</button>
+<div class="num">+243 838 779 476</div>
 <div id="status" class="status"></div>
 
 <div id="callUI" class="call-ui">
-<div class="avatar pulse">🎧</div>
-<h2 id="callState">Appel en cours...</h2>
-<p id="callInfo" style="color:#666;margin-top:8px;font-size:14px">Recherche d'un agent disponible</p>
-<audio id="remoteAudio" autoplay></audio>
+<h2 id="state">Connexion...</h2>
+<p id="info" style="color:#666;margin-top:8px">Recherche d'un agent disponible</p>
+<audio id="audio" autoplay></audio>
 <button class="hangup" onclick="endCall()">✕</button>
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <script>
-const AGENT_IDS=["ceh-agent-101","ceh-agent-102","ceh-agent-103"];
-let peer=null,currentCall=null,localStream=null;
-async function initPeer(){
-  const fid="fidele-"+Math.random().toString(36).substr(2,6);
-  peer=new Peer(fid);
-  peer.on('open',()=>{document.getElementById('status').textContent="Prêt à appeler";});
-}
+const AGENTS=["ceh-agent-101","ceh-agent-102","ceh-agent-103"];
+let peer,call,stream;
+let p=new Peer("fidele-"+Math.random().toString(36).substr(2,5));
+p.on('open',()=>{document.getElementById('status').textContent="Prêt à appeler"});
 async function startCall(){
   document.getElementById('callUI').classList.add('active');
-  document.getElementById('callState').textContent="Connexion...";
-  document.getElementById('contactBtn').classList.add('calling');
-  try{ localStream=await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){ alert("Autorisez le micro"); endCall(); return; }
-  let idx=parseInt(localStorage.getItem('ceh_rr')||'0');
-  const target=AGENT_IDS[idx%AGENT_IDS.length];
-  idx++; localStorage.setItem('ceh_rr',idx);
-  document.getElementById('callInfo').textContent="Connexion à un agent disponible...";
-  const call=peer.call(target,localStream);
-  if(!call){ document.getElementById('callInfo').textContent="Aucun agent disponible"; setTimeout(endCall,3000); return; }
-  currentCall=call;
-  call.on('stream',s=>{ document.getElementById('callState').textContent="En communication"; document.getElementById('callInfo').textContent="Connecté à CEH CALL-CENTER"; document.getElementById('remoteAudio').srcObject=s; });
+  document.getElementById('state').textContent="Connexion au standard...";
+  try{stream=await navigator.mediaDevices.getUserMedia({audio:true});}catch(e){alert("Autorisez le micro");endCall();return;}
+  let i=parseInt(localStorage.getItem('ceh_rr')||'0'); let t=AGENTS[i%AGENTS.length]; i++; localStorage.setItem('ceh_rr',i);
+  document.getElementById('info').textContent="Connexion à un agent...";
+  call=p.call(t,stream);
+  if(!call){document.getElementById('info').textContent="Aucun agent en ligne"; setTimeout(endCall,2500); return;}
+  call.on('stream',s=>{document.getElementById('state').textContent="En communication";document.getElementById('info').textContent="Connecté à CEH CALL-CENTER";document.getElementById('audio').srcObject=s;});
   call.on('close',endCall);
 }
-function endCall(){
-  if(currentCall) currentCall.close();
-  if(localStream) localStream.getTracks().forEach(t=>t.stop());
-  document.getElementById('callUI').classList.remove('active');
-  document.getElementById('contactBtn').classList.remove('calling');
-  document.getElementById('contactBtn').textContent="NOUS CONTACTER";
-  document.getElementById('status').textContent="Appel terminé";
-}
-initPeer();
+function endCall(){if(call)call.close();if(stream)stream.getTracks().forEach(t=>t.stop());document.getElementById('callUI').classList.remove('active');document.getElementById('status').textContent="Appel terminé";}
 </script>
 </body>
 </html>
