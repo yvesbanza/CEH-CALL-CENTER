@@ -18,28 +18,25 @@ select{width:100%;padding:10px;background:#0a0a0a;border:1px solid #222;border-r
 .dot{width:10px;height:10px;border-radius:50%;display:inline-block;background:#666}
 #callScreen{display:none;position:fixed;inset:0;background:#000;z-index:100;flex-direction:column;align-items:center;justify-content:center}
 #callScreen.active{display:flex}
-#log{background:#0a0a0a;border:1px solid #222;border-radius:8px;padding:8px;margin-top:10px;font-size:11px;color:#aaa;width:100%;max-height:80px;overflow:auto;white-space:pre-wrap}
+#log{background:#0a0a0a;border:1px solid #222;border-radius:8px;padding:8px;margin-top:10px;font-size:11px;color:#aaa;width:100%;max-height:100px;overflow:auto;white-space:pre-wrap}
 </style>
 </head>
 <body>
 <h2>CEH - Espace Agent</h2>
 <p class="sub">Les fidèles ne voient JAMAIS votre numéro perso</p>
-<img src="ceh_logo.png?v=103" class="logo-mid" alt="CEH">
+<img src="ceh_logo.png?v=104" class="logo-mid" alt="CEH">
 
 <div class="card">
-<label style="font-size:14px">Choisissez votre poste</label>
 <select id="agentSelect">
 <option value="ceh-agent-101">Agent 101 - Yves Banza (Superviseur)</option>
 <option value="ceh-agent-102">Agent 102 - +243 896 027 250</option>
 <option value="ceh-agent-103">Agent 103 - +243 999 056 257</option>
 </select>
 <div style="margin-top:12px;display:flex;align-items:center;gap:8px"><span id="dot" class="dot"></span><span id="status">Hors ligne</span></div>
-
 <button class="btn btn-green" id="btnOn">✅ Se mettre en ligne</button>
 <button class="btn btn-red" id="btnOff">Se déconnecter</button>
-
 <p style="color:#444;font-size:10px;margin-top:10px">ID Peer: <span id="peerId">-</span></p>
-<div id="log">Journal:\n- Page chargée OK</div>
+<div id="log">Journal: prêt</div>
 </div>
 
 <div id="callScreen">
@@ -52,7 +49,6 @@ select{width:100%;padding:10px;background:#0a0a0a;border:1px solid #222;border-r
 </div>
 </div>
 
-<!-- 2 CDN différents au cas où un bloque -->
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <script>
 let peer=null,incomingCall=null,localStream=null;
@@ -61,105 +57,79 @@ const statusEl=document.getElementById('status');
 const dotEl=document.getElementById('dot');
 const peerIdEl=document.getElementById('peerId');
 
-function addLog(t){
-  logBox.textContent += "\n- "+t;
-  console.log(t);
-}
+function addLog(t){logBox.textContent+="\n- "+t; console.log(t);}
 
-window.addEventListener('load', ()=>{
-  addLog("Page prête, PeerJS chargé? "+ (typeof Peer !== 'undefined' ? "OUI" : "NON"));
-  if(typeof Peer==='undefined'){
-    statusEl.textContent="ERREUR: Internet bloque PeerJS";
-    addLog("Essayez avec VPN ou WiFi");
-    alert("PeerJS bloqué par votre réseau. Activez un VPN ou passez en WiFi.");
-  }
-});
+const PEER_SERVERS = [
+  {host:'0.peerjs.com', port:443, secure:true, path:'/'}, // serveur 1
+  {host:'peer.9k1.de', port:443, secure:true, path:'/myapp'}, // serveur 2 secours EU
+  {host:'peerjs.92k.de', port:443, secure:true, path:'/myapp'} // serveur 3 secours
+];
 
-document.getElementById('btnOn').onclick = async ()=>{
-  const wantedId=document.getElementById('agentSelect').value;
-  addLog("Clic En Ligne: "+wantedId);
-  statusEl.textContent="Connexion...";
-  
-  if(peer){ try{peer.destroy()}catch(e){} }
-
-  // Demande micro AVANT de se connecter (obligatoire sur mobile)
-  try{
-    addLog("Demande micro...");
-    localStream=await navigator.mediaDevices.getUserMedia({audio:true});
-    addLog("Micro OK");
-  }catch(e){
-    addLog("Micro REFUSÉ: "+e.message);
-    alert("Vous devez autoriser le micro !");
-    statusEl.textContent="Micro refusé";
+async function tryConnect(id, serverIndex=0){
+  if(serverIndex>=PEER_SERVERS.length){
+    addLog("❌ Tous les serveurs échoués. Passe en WiFi ou VPN");
+    statusEl.textContent="Échec réseau - Activez VPN/WiFi";
+    alert("Réseau Vodacom/Airtel bloque les appels. Activez un VPN gratuit (1.1.1.1) puis réessayez. Ça va passer direct.");
     return;
   }
+  const cfg=PEER_SERVERS[serverIndex];
+  addLog("Essai serveur "+(serverIndex+1)+": "+cfg.host);
 
-  try{
-    addLog("Création Peer ID fixe...");
-    peer=new Peer(wantedId);
-  }catch(err){
-    addLog("Erreur création Peer: "+err);
-    statusEl.textContent="Erreur création";
-    return;
-  }
+  peer=new Peer(id, {
+    host: cfg.host,
+    port: cfg.port,
+    secure: cfg.secure,
+    path: cfg.path,
+    debug:1,
+    config:{ iceServers:[{urls:'stun:stun.l.google.com:19302'}, {urls:'stun:stun1.l.google.com:19302'}] }
+  });
 
-  peer.on('open', id=>{
-    addLog("✅ CONNECTÉ ID: "+id);
-    peerIdEl.textContent=id;
-    statusEl.textContent="✅ EN LIGNE - En attente";
+  peer.on('open', myId=>{
+    addLog("✅ CONNECTÉ via "+cfg.host+" ID: "+myId);
+    peerIdEl.textContent=myId;
+    statusEl.textContent="✅ EN LIGNE via serveur "+(serverIndex+1);
     dotEl.style.background="#00FF88";
   });
 
   peer.on('error', err=>{
-    addLog("❌ Erreur Peer: "+err.type);
-    if(err.type==='unavailable-id'){
-      addLog("ID déjà pris, tentative aléatoire...");
-      peer=new Peer(); // ID aléatoire
-      peer.on('open', id=>{
-        peerIdEl.textContent=id+" (aléatoire)";
-        statusEl.textContent="EN LIGNE (mode secours)";
-        dotEl.style.background="#00FF88";
-        alert("ID "+wantedId+" déjà utilisé ailleurs. Vous êtes en ligne en mode secours avec ID: "+id+"\nDites aux fidèles de rafraîchir leur page.");
-      });
+    addLog("Erreur "+cfg.host+": "+err.type);
+    if(err.type==='network' || err.type==='server-error' || err.type==='socket-error'){
+      addLog("Serveur "+cfg.host+" inaccessible, on tente le suivant...");
+      try{peer.destroy();}catch(e){}
+      setTimeout(()=>tryConnect(id, serverIndex+1), 1000);
+    }else if(err.type==='unavailable-id'){
+      addLog("ID déjà pris");
+      statusEl.textContent="ID déjà pris ailleurs";
     }else{
       statusEl.textContent="Erreur: "+err.type;
-      alert("Erreur réseau: "+err.type);
     }
   });
 
   peer.on('call', call=>{
-    addLog("📞 Appel reçu de "+call.peer);
+    addLog("📞 Appel de "+call.peer);
     incomingCall=call;
     document.getElementById('callScreen').classList.add('active');
     document.getElementById('callerInfo').textContent="Fidèle: "+call.peer;
   });
+}
 
-  peer.on('disconnected', ()=>{addLog("Déconnecté du serveur"); statusEl.textContent="Déconnecté, reconnexion..."; peer.reconnect();});
+document.getElementById('btnOn').onclick=async()=>{
+  const wantedId=document.getElementById('agentSelect').value;
+  addLog("Clic En Ligne: "+wantedId);
+  statusEl.textContent="Demande micro...";
+  try{
+    localStream=await navigator.mediaDevices.getUserMedia({audio:true});
+    addLog("Micro OK");
+  }catch(e){
+    addLog("Micro refusé"); alert("Autorisez le micro"); return;
+  }
+  statusEl.textContent="Connexion...";
+  tryConnect(wantedId,0);
 };
 
-document.getElementById('btnOff').onclick=()=>{
-  if(peer)peer.destroy();
-  statusEl.textContent="Hors ligne";
-  dotEl.style.background="#666";
-  peerIdEl.textContent="-";
-  addLog("Déconnexion manuelle");
-};
-
-document.getElementById('btnAns').onclick=()=>{
-  if(!incomingCall)return;
-  addLog("Décroché");
-  incomingCall.answer(localStream);
-  incomingCall.on('stream', s=>{
-    document.getElementById('remoteAudio').srcObject=s;
-    document.getElementById('callerInfo').textContent="En communication...";
-  });
-};
-
-document.getElementById('btnDec').onclick=()=>{
-  if(incomingCall)incomingCall.close();
-  document.getElementById('callScreen').classList.remove('active');
-  addLog("Appel refusé");
-};
+document.getElementById('btnOff').onclick=()=>{ if(peer)peer.destroy(); statusEl.textContent="Hors ligne"; dotEl.style.background="#666"; addLog("Déconnecté"); };
+document.getElementById('btnAns').onclick=()=>{ if(!incomingCall)return; incomingCall.answer(localStream); incomingCall.on('stream', s=>{document.getElementById('remoteAudio').srcObject=s;}); addLog("Décroché"); };
+document.getElementById('btnDec').onclick=()=>{ if(incomingCall)incomingCall.close(); document.getElementById('callScreen').classList.remove('active'); addLog("Refusé"); };
 </script>
 </body>
-</html>
+  </html>
