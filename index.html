@@ -16,7 +16,7 @@ body{background:#000;color:#fff;font-family:system-ui;margin:0;padding:12px}
 .logo-fidele img{width:90%;max-width:380px;display:block;margin:0 auto}
 .input-wrap{position:relative;margin-top:8px}
 .input-wrap input{width:100%;padding:12px 45px 12px 12px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;box-sizing:border-box}
-.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:20px;user-select:none}
+.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:20px}
 input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;margin-top:8px;box-sizing:border-box}
 .back{color:#aaa;font-size:14px;cursor:pointer;display:inline-block;margin:6px 0 10px 0}
 .row{display:flex;gap:8px}
@@ -35,7 +35,7 @@ input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #333;ba
 
 <div id="view-fidele" class="hidden">
   <span class="back" onclick="show('view-landing')">← Retour</span>
-  <div class="warning"><span>⚠️</span><div><b>Si l'appel ne passe pas?</b><br>Sur Orange / Vodacom / Airtel, activez <b>1.1.1.1 WARP</b> en <b>Connecté</b> puis réessayez.<br><a href="https://play.google.com/store/apps/details?id=com.cloudflare.onedotonedotonedotone">Télécharger WARP</a></div><span onclick="this.parentElement.style.display='none'" style="cursor:pointer;margin-left:auto">✕</span></div>
+  <div class="warning"><span>⚠️</span><div><b>Si l'appel ne passe pas?</b><br>Activez <b>1.1.1.1 WARP</b> en <b>Connecté</b> puis réessayez.<br><a href="https://play.google.com/store/apps/details?id=com.cloudflare.onedotonedotonedotone">Télécharger WARP</a></div><span onclick="this.parentElement.style.display='none'" style="cursor:pointer;margin-left:auto">✕</span></div>
   <div class="logo-fidele"><img src="ceh_icon512.png"></div>
   <button class="btn btn-white" onclick="callFidele()" style="margin-top:40px">NOUS CONTACTER</button>
   <p style="text-align:center"><span style="color:#aaa">+243 838 779 476</span><br><span style="color:#00ff88">Prêt à appeler</span></p>
@@ -44,82 +44,87 @@ input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #333;ba
 <div id="view-agent-login" class="hidden">
   <span class="back" onclick="show('view-landing')">← Retour</span>
   <div class="card">
-    <h3>Agent - Code initial: 1234</h3>
+    <h3>Agent - Code: 1234</h3>
     <select id="agentSelectLogin"></select>
-    <div class="input-wrap">
-      <input type="password" id="agentPin" placeholder="Entre 1234">
-      <span class="eye" onclick="toggleEye('agentPin',this)">👁️</span>
-    </div>
+    <div class="input-wrap"><input type="password" id="agentPin" placeholder="1234"><span class="eye" onclick="toggleEye('agentPin',this)">👁️</span></div>
     <button class="btn btn-white" onclick="loginAgent()">Déverrouiller</button>
-    <button class="btn btn-dark" style="font-size:12px;color:#ffcc00;border-color:#ffcc00" onclick="resetTo1234()">⚠️ Si 1234 ne marche pas, clique ici pour réinitialiser à 1234</button>
+    <button class="btn btn-dark" style="font-size:12px;color:#ffcc00;border-color:#ffcc00" onclick="resetTo1234()">⚠️ Réinitialiser à 1234</button>
     <p id="agentLoginMsg" style="color:#ff5555"></p>
-    <small style="color:#888">Code de départ <b>1234</b>. Tu le changeras à l'intérieur.</small>
   </div>
 </div>
 
 <div id="view-agent" class="hidden">
   <span class="back" onclick="show('view-landing')">← Retour</span><h3 style="text-align:center"><small id="agentWelcome" style="color:#00ff88"></small></h3>
-  <div class="card"><p><span id="dot">●</span> <span id="agentState">Hors ligne</span></p><button class="btn btn-green" onclick="goOnline()">✅ Se mettre en ligne</button><button class="btn btn-dark" style="color:#ff5555" onclick="goOffline()">Se déconnecter</button><hr><button class="btn btn-outline-green" onclick="changeAgentPin()">🔒 Modifier mon code</button><button class="btn btn-dark" onclick="logoutAgent()">🔓 Verrouiller</button></div>
+  <div class="card"><p><span id="dot">●</span> <span id="agentState">Hors ligne</span></p><button class="btn btn-green" onclick="goOnline()">✅ En ligne</button><button class="btn btn-dark" onclick="goOffline()">Hors ligne</button><hr><button class="btn btn-outline-green" onclick="changeAgentPin()">🔒 Modifier mon code</button><button class="btn btn-dark" onclick="logoutAgent()">🔓 Verrouiller</button></div>
 </div>
 
 <div id="view-sup-login" class="hidden">
   <span class="back" onclick="show('view-landing')">← Retour</span>
-  <div class="card"><h3>Superviseur</h3>
-    <div class="input-wrap">
-      <input type="password" id="supPin" placeholder="Code superviseur">
-      <span class="eye" onclick="toggleEye('supPin',this)">👁️</span>
+  <div class="card">
+    <h3>Superviseur</h3>
+    <div class="input-wrap"><input type="password" id="supPin" placeholder="Tape ton nouveau code ici ex: 2026"><span class="eye" onclick="toggleEye('supPin',this)">👁️</span></div>
+    <button class="btn btn-white" onclick="loginSup()">Entrer</button>
+    <div class="row">
+      <button class="btn btn-dark" style="flex:1" onclick="createSupPin()">Créer</button>
+      <button class="btn btn-dark" style="flex:1" onclick="modifySupPin()">Modifier</button>
     </div>
-    <button class="btn btn-white" onclick="loginSup()">Entrer</button><div class="row"><button class="btn btn-dark" style="flex:1" onclick="createSupPin()">Créer</button><button class="btn btn-dark" style="flex:1" onclick="modifySupPin()">Modifier</button></div><p id="supMsg" style="color:#ff5555"></p>
+    <p id="supMsg" style="color:#ff5555"></p>
+    <small style="color:#888">1ère fois: tape 2026 puis clique Créer. Ensuite pour entrer, tape 2026 puis Entrer.</small>
   </div>
 </div>
 
 <div id="view-superviseur" class="hidden">
   <span class="back" onclick="show('view-landing')">← Retour</span><h3>Dashboard</h3><button class="btn btn-green" onclick="document.getElementById('formAgent').classList.toggle('hidden')">+ Agent</button>
-  <div id="formAgent" class="card hidden"><input id="aName" placeholder="Nom"><input id="aPhone" placeholder="Numéro"><input id="aCode" placeholder="Code ex: 101"><button class="btn btn-white" onclick="addAgent()">Enregistrer (code sera 1234)</button></div><div id="listAgents" class="card"></div>
+  <div id="formAgent" class="card hidden"><input id="aName" placeholder="Nom"><input id="aPhone" placeholder="Numéro"><input id="aCode" placeholder="Code ex: 101"><button class="btn btn-white" onclick="addAgent()">Enregistrer (code 1234)</button></div><div id="listAgents" class="card"></div>
 </div>
 
 <script>
 const LS_AGENTS='ceh_agents_v2', LS_AGENT_PINS='ceh_agent_pins', LS_SUP_PIN='ceh_sup_pin';
 let agents=JSON.parse(localStorage.getItem(LS_AGENTS)||'[{"name":"Yves Banza","phone":"+243838779476","code":"101"}]');
-
 let savedPins = JSON.parse(localStorage.getItem(LS_AGENT_PINS)||'null');
 let agentPins = savedPins;
-if(!agentPins){
-  agentPins = {};
-  agents.forEach(a=>{ agentPins[a.code]="1234"; });
-  localStorage.setItem(LS_AGENT_PINS, JSON.stringify(agentPins));
-}
-
+if(!agentPins){ agentPins={}; agents.forEach(a=>{ agentPins[a.code]="1234"; }); localStorage.setItem(LS_AGENT_PINS, JSON.stringify(agentPins));}
 let currentAgent=null;
 function toggleEye(id,el){const i=document.getElementById(id); if(i.type==='password'){i.type='text'; el.textContent='🙈';} else {i.type='password'; el.textContent='👁️';}}
-function resetTo1234(){agentPins={}; agents.forEach(a=>{ agentPins[a.code]="1234"; }); localStorage.setItem(LS_AGENT_PINS, JSON.stringify(agentPins)); alert('✅ Réinitialisé à 1234 pour tous les agents! Tape 1234 maintenant.'); location.reload();}
+function resetTo1234(){agentPins={}; agents.forEach(a=>{ agentPins[a.code]="1234"; }); localStorage.setItem(LS_AGENT_PINS, JSON.stringify(agentPins)); alert('✅ 1234 réinitialisé'); location.reload();}
 function show(id){document.querySelectorAll('[id^=view-]').forEach(d=>d.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');if(id.includes('agent'))renderSelects();if(id==='view-superviseur')renderAgentsList();}
 function saveAgents(){localStorage.setItem(LS_AGENTS,JSON.stringify(agents));}
 function savePins(){localStorage.setItem(LS_AGENT_PINS,JSON.stringify(agentPins));}
 function renderSelects(){const s=document.getElementById('agentSelectLogin');s.innerHTML='';agents.forEach(a=>{let o=document.createElement('option');o.value=a.code;o.textContent=`Agent ${a.code} - ${a.name}`;s.appendChild(o);});}
-function loginAgent(){
-  const code=document.getElementById('agentSelectLogin').value,pin=document.getElementById('agentPin').value.trim(),msg=document.getElementById('agentLoginMsg');
-  if(!pin){msg.textContent='Entre le code';return;}
-  if(agentPins[code]===pin){currentAgent=agents.find(a=>a.code===code);document.getElementById('agentWelcome').textContent=currentAgent.name;show('view-agent');}
-  else msg.textContent='Code incorrect. Actuel: '+(agentPins[code]||'1234')+' - Clique réinitialiser si besoin';
-}
-function changeAgentPin(){
-  const oldP=prompt('Ancien code:'); if(oldP!==agentPins[currentAgent.code]) return alert('Ancien code faux!');
-  const newP=prompt('Nouveau code (4-6 chiffres):'); if(!newP||newP.length<4) return alert('Min 4');
-  const c=prompt('Confirme:'); if(newP!==c) return alert('Différent');
-  agentPins[currentAgent.code]=newP; savePins(); alert('✅ Nouveau code: '+newP);
-}
-function logoutAgent(){currentAgent=null;document.getElementById('agentPin').value='';show('view-agent-login');}
+function loginAgent(){const code=document.getElementById('agentSelectLogin').value,pin=document.getElementById('agentPin').value.trim(),msg=document.getElementById('agentLoginMsg');if(!pin){msg.textContent='Entre le code';return;}if(agentPins[code]===pin){currentAgent=agents.find(a=>a.code===code);document.getElementById('agentWelcome').textContent=currentAgent.name;show('view-agent');}else msg.textContent='Incorrect. Clique réinitialiser';}
+function changeAgentPin(){const oldP=prompt('Ancien:'); if(oldP!==agentPins[currentAgent.code]) return alert('Faux'); const newP=prompt('Nouveau:'); if(!newP||newP.length<4) return; const c=prompt('Confirme:'); if(newP!==c) return; agentPins[currentAgent.code]=newP; savePins(); alert('Nouveau: '+newP);}
+function logoutAgent(){currentAgent=null;show('view-agent-login');}
 function goOnline(){document.getElementById('agentState').textContent='En ligne';document.getElementById('dot').style.color='#00ff88';}
 function goOffline(){document.getElementById('agentState').textContent='Hors ligne';document.getElementById('dot').style.color='#666';}
-function loginSup(){const pin=document.getElementById('supPin').value.trim(),saved=localStorage.getItem(LS_SUP_PIN);if(!saved){document.getElementById('supMsg').textContent='Pas de code, clique Créer';return;}if(pin===saved)show('view-superviseur');else document.getElementById('supMsg').textContent='Incorrect';}
-function createSupPin(){if(localStorage.getItem(LS_SUP_PIN))return alert('Existe déjà');const p=prompt('Crée code superviseur:');if(p&&p.length>=4){localStorage.setItem(LS_SUP_PIN,p);alert('Créé!');}}
-function modifySupPin(){const s=localStorage.getItem(LS_SUP_PIN);if(!s)return alert('Clique Créer');const o=prompt('Ancien:');if(o!==s)return alert('Faux');const n=prompt('Nouveau:');if(n&&n.length>=4){localStorage.setItem(LS_SUP_PIN,n);alert('Modifié!');}}
-function renderAgentsList(){const d=document.getElementById('listAgents');d.innerHTML='<h4>Agents - code 1234 au départ</h4>';agents.forEach((a,i)=>{d.innerHTML+=`<div style="padding:10px 0;border-bottom:1px solid #222"><b>${a.name}</b> - ${a.code}<br><small>${a.phone}</small><br><button onclick="delAgent(${i})" style="color:#f55;background:none;border:0">Supprimer</button></div>`});}
-function addAgent(){const n=document.getElementById('aName').value.trim(),ph=document.getElementById('aPhone').value.trim(),c=document.getElementById('aCode').value.trim();if(!n||!ph||!c)return alert('Remplis tout');agents.push({name:n,phone:ph,code:c});agentPins[c]="1234";saveAgents();savePins();renderAgentsList();document.getElementById('formAgent').classList.add('hidden');}
+
+// SUPERVISEUR CORRIGÉ - UTILISE LA CASE DE SAISIE
+function loginSup(){
+  const pin=document.getElementById('supPin').value.trim(), saved=localStorage.getItem(LS_SUP_PIN), msg=document.getElementById('supMsg');
+  if(!saved){msg.textContent='Pas encore de code. Tape ton code (ex: 2026) puis clique Créer.'; return;}
+  if(pin===saved){show('view-superviseur');} else {msg.textContent='Code incorrect. Tu as tapé '+pin+' mais enregistré c\'est '+saved;}
+}
+function createSupPin(){
+  const pin=document.getElementById('supPin').value.trim();
+  if(!pin || pin.length<4){ document.getElementById('supMsg').textContent='Tape au moins 4 chiffres d\'abord (ex: 2026)'; return;}
+  if(localStorage.getItem(LS_SUP_PIN)){ document.getElementById('supMsg').textContent='Code existe déjà, utilise Modifier ou Entrer'; return;}
+  localStorage.setItem(LS_SUP_PIN, pin);
+  alert('✅ Code superviseur créé: '+pin); show('view-superviseur');
+}
+function modifySupPin(){
+  const saved=localStorage.getItem(LS_SUP_PIN);
+  if(!saved){ document.getElementById('supMsg').textContent='Pas de code, clique Créer'; return;}
+  const oldP=prompt('Ancien code superviseur:');
+  if(oldP!==saved){ alert('Ancien faux. Actuel: '+saved); return;}
+  const newP=document.getElementById('supPin').value.trim();
+  if(!newP || newP.length<4){ alert('Tape nouveau code dans la case d\'abord'); return;}
+  localStorage.setItem(LS_SUP_PIN, newP);
+  alert('✅ Modifié en: '+newP);
+}
+function renderAgentsList(){const d=document.getElementById('listAgents');d.innerHTML='<h4>Agents</h4>';agents.forEach((a,i)=>{d.innerHTML+=`<div style="padding:10px 0;border-bottom:1px solid #222"><b>${a.name}</b> - ${a.code}<br><small>${a.phone}</small><br><button onclick="delAgent(${i})" style="color:#f55;background:none;border:0">Supprimer</button></div>`});}
+function addAgent(){const n=document.getElementById('aName').value.trim(),ph=document.getElementById('aPhone').value.trim(),c=document.getElementById('aCode').value.trim();if(!n||!ph||!c)return alert('Remplis');agents.push({name:n,phone:ph,code:c});agentPins[c]="1234";saveAgents();savePins();renderAgentsList();document.getElementById('formAgent').classList.add('hidden');}
 function delAgent(i){if(confirm('Supprimer?')){delete agentPins[agents[i].code];savePins();agents.splice(i,1);saveAgents();renderAgentsList();}}
 function callFidele(){alert('Appel vers Agent '+agents[Math.floor(Math.random()*agents.length)].code);}
 renderSelects();
 </script>
 </body>
-      </html>
+    </html>
