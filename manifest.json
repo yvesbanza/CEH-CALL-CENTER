@@ -1,24 +1,11 @@
 {
+  "id": "/CEH-CALL-CENTER/fidele",
   "name": "CEH Fidele",
-  "short_name": "CEH",
-  "description": "Centre Evangelique Horeb - Appel direct",
-  "start_url": "./index.html",
-  "scope": "/CEH-CALL-CENTER/",
+  "short_name": "CEH Fidele",
+  "start_url": "./index.html?v=fidele",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#b8860b",
-  "icons": [
-    {
-      "src": "ceh_icon192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "ceh_icon512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ]
+  "theme_color": "#000000",
+  "icons": [{"src": "ceh_icon192.png","sizes": "192x192","type": "image/png"},{"src": "ceh_icon512.png","sizes": "512x512","type": "image/png"}]
 }
