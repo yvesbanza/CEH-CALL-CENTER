@@ -64,5 +64,8 @@ async function startCall(){
 }
 function endCall(){if(call)call.close();if(stream)stream.getTracks().forEach(t=>t.stop());document.getElementById('callUI').classList.remove('active');document.getElementById('status').textContent="Appel terminé";}
 </script>
+<script>
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js'); }
+</script>
 </body>
 </html>
