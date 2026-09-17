@@ -7,14 +7,16 @@
 <style>
 body{background:#000;color:#fff;font-family:system-ui;margin:0;padding:12px}
 .card{background:#111;border:1px solid #222;border-radius:16px;padding:16px;margin-top:16px}
-.btn{width:100%;padding:16px;border-radius:14px;border:0;font-weight:bold;font-size:16px;margin-top:10px}
+.btn{width:100%;padding:16px;border-radius:14px;border:0;font-weight:bold;font-size:16px;margin-top:10px;cursor:pointer}
 .btn-white{background:#fff;color:#000}.btn-green{background:#00ff88;color:#000}
 .btn-dark{background:#222;color:#fff;border:1px solid #444}
 .btn-outline-green{background:#000;color:#00ff88;border:1px solid #00ff88}
 .hidden{display:none}
-.logo-wrap{text-align:center;margin:30px 0}
-.logo-wrap img{width:85%;max-width:340px}
+.logo-wrap{text-align:center;margin:30px 0}.logo-wrap img{width:85%;max-width:340px}
 .logo-fidele img{width:90%;max-width:380px;display:block;margin:0 auto}
+.input-wrap{position:relative;margin-top:8px}
+.input-wrap input{width:100%;padding:12px 45px 12px 12px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;box-sizing:border-box}
+.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:20px;user-select:none}
 input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;margin-top:8px;box-sizing:border-box}
 .back{color:#aaa;font-size:14px;cursor:pointer;display:inline-block;margin:6px 0 10px 0}
 .row{display:flex;gap:8px}
@@ -41,16 +43,34 @@ input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #333;ba
 
 <div id="view-agent-login" class="hidden">
   <span class="back" onclick="show('view-landing')">← Retour</span>
-  <div class="card"><h3>Agent - Code initial: 1234</h3><select id="agentSelectLogin"></select><input type="password" id="agentPin" placeholder="Entre 1234 pour la 1ère fois"><button class="btn btn-white" onclick="loginAgent()">Déverrouiller</button><p id="agentLoginMsg" style="color:#ff5555"></p><small style="color:#888">Code de départ <b>1234</b> pour tous. Tu le changeras à l'intérieur.</small></div>
+  <div class="card">
+    <h3>Agent - Code initial: 1234</h3>
+    <select id="agentSelectLogin"></select>
+    <div class="input-wrap">
+      <input type="password" id="agentPin" placeholder="Entre 1234">
+      <span class="eye" onclick="toggleEye('agentPin',this)">👁️</span>
+    </div>
+    <button class="btn btn-white" onclick="loginAgent()">Déverrouiller</button>
+    <button class="btn btn-dark" style="font-size:12px;color:#ffcc00;border-color:#ffcc00" onclick="resetTo1234()">⚠️ Si 1234 ne marche pas, clique ici pour réinitialiser à 1234</button>
+    <p id="agentLoginMsg" style="color:#ff5555"></p>
+    <small style="color:#888">Code de départ <b>1234</b>. Tu le changeras à l'intérieur.</small>
+  </div>
 </div>
 
 <div id="view-agent" class="hidden">
   <span class="back" onclick="show('view-landing')">← Retour</span><h3 style="text-align:center"><small id="agentWelcome" style="color:#00ff88"></small></h3>
-  <div class="card"><p><span id="dot">●</span> <span id="agentState">Hors ligne</span></p><button class="btn btn-green" onclick="goOnline()">✅ Se mettre en ligne</button><button class="btn btn-dark" onclick="goOffline()">Se déconnecter</button><hr><button class="btn btn-outline-green" onclick="changeAgentPin()">🔒 Modifier mon code (était 1234)</button><button class="btn btn-dark" onclick="logoutAgent()">🔓 Verrouiller</button></div>
+  <div class="card"><p><span id="dot">●</span> <span id="agentState">Hors ligne</span></p><button class="btn btn-green" onclick="goOnline()">✅ Se mettre en ligne</button><button class="btn btn-dark" style="color:#ff5555" onclick="goOffline()">Se déconnecter</button><hr><button class="btn btn-outline-green" onclick="changeAgentPin()">🔒 Modifier mon code</button><button class="btn btn-dark" onclick="logoutAgent()">🔓 Verrouiller</button></div>
 </div>
 
 <div id="view-sup-login" class="hidden">
-  <span class="back" onclick="show('view-landing')">← Retour</span><div class="card"><h3>Superviseur</h3><input type="password" id="supPin" placeholder="Code superviseur"><button class="btn btn-white" onclick="loginSup()">Entrer</button><div class="row"><button class="btn btn-dark" style="flex:1" onclick="createSupPin()">Créer</button><button class="btn btn-dark" style="flex:1" onclick="modifySupPin()">Modifier</button></div><p id="supMsg" style="color:#ff5555"></p></div>
+  <span class="back" onclick="show('view-landing')">← Retour</span>
+  <div class="card"><h3>Superviseur</h3>
+    <div class="input-wrap">
+      <input type="password" id="supPin" placeholder="Code superviseur">
+      <span class="eye" onclick="toggleEye('supPin',this)">👁️</span>
+    </div>
+    <button class="btn btn-white" onclick="loginSup()">Entrer</button><div class="row"><button class="btn btn-dark" style="flex:1" onclick="createSupPin()">Créer</button><button class="btn btn-dark" style="flex:1" onclick="modifySupPin()">Modifier</button></div><p id="supMsg" style="color:#ff5555"></p>
+  </div>
 </div>
 
 <div id="view-superviseur" class="hidden">
@@ -61,14 +81,18 @@ input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #333;ba
 <script>
 const LS_AGENTS='ceh_agents_v2', LS_AGENT_PINS='ceh_agent_pins', LS_SUP_PIN='ceh_sup_pin';
 let agents=JSON.parse(localStorage.getItem(LS_AGENTS)||'[{"name":"Yves Banza","phone":"+243838779476","code":"101"}]');
-// CODE INITIAL 1234 POUR TOUS LES AGENTS
-let defaultPins = {};
-agents.forEach(a=>{ defaultPins[a.code]="1234"; });
+
 let savedPins = JSON.parse(localStorage.getItem(LS_AGENT_PINS)||'null');
-let agentPins = savedPins || defaultPins;
-if(!savedPins){ localStorage.setItem(LS_AGENT_PINS, JSON.stringify(agentPins)); }
+let agentPins = savedPins;
+if(!agentPins){
+  agentPins = {};
+  agents.forEach(a=>{ agentPins[a.code]="1234"; });
+  localStorage.setItem(LS_AGENT_PINS, JSON.stringify(agentPins));
+}
 
 let currentAgent=null;
+function toggleEye(id,el){const i=document.getElementById(id); if(i.type==='password'){i.type='text'; el.textContent='🙈';} else {i.type='password'; el.textContent='👁️';}}
+function resetTo1234(){agentPins={}; agents.forEach(a=>{ agentPins[a.code]="1234"; }); localStorage.setItem(LS_AGENT_PINS, JSON.stringify(agentPins)); alert('✅ Réinitialisé à 1234 pour tous les agents! Tape 1234 maintenant.'); location.reload();}
 function show(id){document.querySelectorAll('[id^=view-]').forEach(d=>d.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');if(id.includes('agent'))renderSelects();if(id==='view-superviseur')renderAgentsList();}
 function saveAgents(){localStorage.setItem(LS_AGENTS,JSON.stringify(agents));}
 function savePins(){localStorage.setItem(LS_AGENT_PINS,JSON.stringify(agentPins));}
@@ -77,13 +101,13 @@ function loginAgent(){
   const code=document.getElementById('agentSelectLogin').value,pin=document.getElementById('agentPin').value.trim(),msg=document.getElementById('agentLoginMsg');
   if(!pin){msg.textContent='Entre le code';return;}
   if(agentPins[code]===pin){currentAgent=agents.find(a=>a.code===code);document.getElementById('agentWelcome').textContent=currentAgent.name;show('view-agent');}
-  else msg.textContent='Code incorrect. Code actuel: 1234';
+  else msg.textContent='Code incorrect. Actuel: '+(agentPins[code]||'1234')+' - Clique réinitialiser si besoin';
 }
 function changeAgentPin(){
-  const oldP=prompt('Ancien code (actuellement 1234):'); if(oldP!==agentPins[currentAgent.code]) return alert('Ancien code faux!');
-  const newP=prompt('Nouveau code perso (4-6 chiffres):'); if(!newP||newP.length<4) return alert('Min 4');
-  const c=prompt('Confirme nouveau:'); if(newP!==c) return alert('Différent');
-  agentPins[currentAgent.code]=newP; savePins(); alert('✅ Nouveau code enregistré: '+newP+' - Garde le secret!');
+  const oldP=prompt('Ancien code:'); if(oldP!==agentPins[currentAgent.code]) return alert('Ancien code faux!');
+  const newP=prompt('Nouveau code (4-6 chiffres):'); if(!newP||newP.length<4) return alert('Min 4');
+  const c=prompt('Confirme:'); if(newP!==c) return alert('Différent');
+  agentPins[currentAgent.code]=newP; savePins(); alert('✅ Nouveau code: '+newP);
 }
 function logoutAgent(){currentAgent=null;document.getElementById('agentPin').value='';show('view-agent-login');}
 function goOnline(){document.getElementById('agentState').textContent='En ligne';document.getElementById('dot').style.color='#00ff88';}
@@ -91,11 +115,11 @@ function goOffline(){document.getElementById('agentState').textContent='Hors lig
 function loginSup(){const pin=document.getElementById('supPin').value.trim(),saved=localStorage.getItem(LS_SUP_PIN);if(!saved){document.getElementById('supMsg').textContent='Pas de code, clique Créer';return;}if(pin===saved)show('view-superviseur');else document.getElementById('supMsg').textContent='Incorrect';}
 function createSupPin(){if(localStorage.getItem(LS_SUP_PIN))return alert('Existe déjà');const p=prompt('Crée code superviseur:');if(p&&p.length>=4){localStorage.setItem(LS_SUP_PIN,p);alert('Créé!');}}
 function modifySupPin(){const s=localStorage.getItem(LS_SUP_PIN);if(!s)return alert('Clique Créer');const o=prompt('Ancien:');if(o!==s)return alert('Faux');const n=prompt('Nouveau:');if(n&&n.length>=4){localStorage.setItem(LS_SUP_PIN,n);alert('Modifié!');}}
-function renderAgentsList(){const d=document.getElementById('listAgents');d.innerHTML='<h4>Agents - code initial 1234</h4>';agents.forEach((a,i)=>{d.innerHTML+=`<div style="padding:10px 0;border-bottom:1px solid #222"><b>${a.name}</b> - ${a.code} - Code: ${agentPins[a.code]||'1234'}<br><small>${a.phone}</small><br><button onclick="delAgent(${i})" style="color:#f55;background:none;border:0">Supprimer</button></div>`});}
+function renderAgentsList(){const d=document.getElementById('listAgents');d.innerHTML='<h4>Agents - code 1234 au départ</h4>';agents.forEach((a,i)=>{d.innerHTML+=`<div style="padding:10px 0;border-bottom:1px solid #222"><b>${a.name}</b> - ${a.code}<br><small>${a.phone}</small><br><button onclick="delAgent(${i})" style="color:#f55;background:none;border:0">Supprimer</button></div>`});}
 function addAgent(){const n=document.getElementById('aName').value.trim(),ph=document.getElementById('aPhone').value.trim(),c=document.getElementById('aCode').value.trim();if(!n||!ph||!c)return alert('Remplis tout');agents.push({name:n,phone:ph,code:c});agentPins[c]="1234";saveAgents();savePins();renderAgentsList();document.getElementById('formAgent').classList.add('hidden');}
 function delAgent(i){if(confirm('Supprimer?')){delete agentPins[agents[i].code];savePins();agents.splice(i,1);saveAgents();renderAgentsList();}}
-function callFidele(){alert('Appel distribué à Agent '+agents[Math.floor(Math.random()*agents.length)].code);}
+function callFidele(){alert('Appel vers Agent '+agents[Math.floor(Math.random()*agents.length)].code);}
 renderSelects();
 </script>
 </body>
-    </html>
+      </html>
