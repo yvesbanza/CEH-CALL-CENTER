@@ -1,7 +1,7 @@
 {
   "name": "CEH Call Center",
   "short_name": "CEH",
-  "description": "Centre Evangélique Hébron - Appel direct sans numéro",
+  "description": "Centre Evangélique Horeb - Appel direct sans numéro",
   "start_url": "index.html",
   "display": "standalone",
   "orientation": "portrait",
