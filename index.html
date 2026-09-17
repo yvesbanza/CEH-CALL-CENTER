@@ -22,18 +22,6 @@ body{background:#000;color:#fff;height:100vh;display:flex;flex-direction:column;
 </style>
 </head>
 <body>
-<!-- SPLASH CEH PLEIN ECRAN -->
-<div id="splash" style="position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;transition:opacity 0.6s">
-  <img src="ceh_logo.png" style="width:85%;max-width:320px;object-fit:contain;filter:brightness(0) invert(1)">
-</div>
-<script>
-  window.addEventListener('load',()=>{
-    setTimeout(()=>{
-      let s=document.getElementById('splash');
-      s.style.opacity='0';
-      setTimeout(()=>s.remove(),600);
-    },1800);
-  });
 </script>
 <!-- ALERTE WARP POUR FIDELES ORANGE/VODACOM -->
 <div id="warpAlert" style="background:#1a1a00;border:1px solid #FFCC00;color:#FFCC00;padding:10px 12px;border-radius:10px;font-size:13px;margin-bottom:12px;display:flex;gap:8px;align-items:center">
