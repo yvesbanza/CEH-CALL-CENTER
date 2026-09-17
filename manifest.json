@@ -1,8 +1,8 @@
 {
-  "name": "CEH",
+  "name": "CEH Fidele",
   "short_name": "CEH",
   "description": "Centre Evangelique Horeb - Appel direct",
-  "start_url": "/CEH-CALL-CENTER/",
+  "start_url": "./index.html",
   "scope": "/CEH-CALL-CENTER/",
   "display": "standalone",
   "background_color": "#000000",
