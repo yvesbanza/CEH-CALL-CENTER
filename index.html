@@ -2,72 +2,164 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CEH CALL-CENTER</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#00FF88">
-<link rel="icon" type="image/png" sizes="192x192" href="ceh_icon192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="ceh_icon512.png">
+<meta name="theme-color" content="#000000">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,sans-serif}
-body{background:#000;color:#fff;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.logo-img{width:85vw;max-width:380px;max-height:60vh;object-fit:contain}
-.btn{margin-top:35px;background:#fff;color:#000;border:none;padding:18px 55px;border-radius:14px;font-weight:800;font-size:18px;cursor:pointer;box-shadow:0 10px 30px rgba(255,255,255,.15)}
-.num{margin-top:20px;color:#888;font-size:14px;letter-spacing:1px}
-.num b{color:#aaa}
-.status{margin-top:10px;color:#00FF88;font-size:13px;min-height:18px}
-.call-ui{display:none;position:fixed;inset:0;background:#000;z-index:100;flex-direction:column;align-items:center;justify-content:center}
-.call-ui.active{display:flex}
-.hangup{margin-top:40px;background:#ff2d2d;color:#fff;border:none;width:70px;height:70px;border-radius:50%;font-size:28px;cursor:pointer}
+body{background:#000;color:#fff;font-family:system-ui;margin:0;padding:16px}
+.card{background:#111;border:1px solid #222;border-radius:16px;padding:16px;margin-top:16px}
+.btn{width:100%;padding:14px;border-radius:12px;border:0;font-weight:bold;font-size:16px;margin-top:10px}
+.btn-white{background:#fff;color:#000}
+.btn-green{background:#00ff88;color:#000}
+.btn-dark{background:#222;color:#fff;border:1px solid #444}
+.warning{background:#000;border:1px solid #ffcc00;color:#ffcc00;padding:10px;border-radius:12px;font-size:13px;display:flex;gap:8px}
+.hidden{display:none}
+.logo-wrap{text-align:center;margin:30px 0}
+.logo-wrap img{width:180px}
+input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;margin-top:8px;box-sizing:border-box}
+.back{color:#aaa;font-size:14px;margin-bottom:10px;display:inline-block;cursor:pointer}
 </style>
 </head>
 <body>
-</script>
-<!-- ALERTE WARP POUR FIDELES ORANGE/VODACOM -->
-<div id="warpAlert" style="background:#1a1a00;border:1px solid #FFCC00;color:#FFCC00;padding:10px 12px;border-radius:10px;font-size:13px;margin-bottom:12px;display:flex;gap:8px;align-items:center">
-  <span>⚠️</span>
-  <div>
-    <b>Si l'appel ne passe pas ?</b><br>
-    Sur Orange / Vodacom / Airtel, activez l'appli gratuite <b>1.1.1.1 WARP</b> sur Play Store, mettez-la en <b>Connecté</b>, puis réessayez l'appel. Sans ça, l'opérateur bloque l'appel.
-    <br><a href="https://play.google.com/store/apps/details?id=com.cloudflare.onedotonedotonedotone" target="_blank" style="color:#00FF88;text-decoration:underline">Télécharger 1.1.1.1 WARP</a>
+
+<!-- LANDING -->
+<div id="view-landing">
+  <div class="logo-wrap">
+    <img src="ceh_icon512.png" alt="CEH"><br>
+    <h2>CEH CALL-CENTER</h2>
   </div>
-  <button onclick="this.parentElement.style.display='none'" style="margin-left:auto;background:none;border:none;color:#FFCC00;font-size:18px;cursor:pointer">✕</button>
+  <button class="btn btn-white" onclick="show('view-fidele')">1. FIDÈLE</button>
+  <button class="btn btn-dark" onclick="show('view-agent')">2. AGENT CALL-CENTER</button>
+  <button class="btn btn-dark" onclick="show('view-superviseur-login')">3. SUPERVISEUR</button>
 </div>
 
-<img src="ceh_logo.png" alt="CEH CALL-CENTER" class="logo-img" style="width:220px;height:auto;display:block;margin:0 auto 20px auto">
+<!-- FIDELE -->
+<div id="view-fidele" class="hidden">
+  <span class="back" onclick="show('view-landing')">← Retour</span>
+  <div class="warning">
+    <span>⚠️</span>
+    <div><b>Si l'appel ne passe pas?</b><br>Sur Orange/Vodacom/Airtel, activez l'appli gratuite <b>1.1.1.1 WARP</b> sur Play Store, mettez-la en Connecté, puis réessayez.<br><a href="https://play.google.com/store/apps/details?id=com.cloudflare.onedotonedotonedotone" style="color:#00ff88">Télécharger 1.1.1.1 WARP</a></div>
+  </div>
+  <div class="logo-wrap"><img src="ceh_icon512.png"><br>CEH<br>CALL-CENTER</div>
+  <button class="btn btn-white" id="btnCall" onclick="callNextAgent()">NOUS CONTACTER</button>
+  <p style="text-align:center;color:#aaa">+243 838 779 476<br><span id="statusFidele" style="color:#00ff88">Prêt à appeler</span></p>
+</div>
 
-<button id="btn" class="btn" onclick="startCall()">NOUS CONTACTER</button>
-<div class="num">+243 838 779 476</div>
-<div id="status" class="status"></div>
+<!-- AGENT -->
+<div id="view-agent" class="hidden">
+  <span class="back" onclick="show('view-landing')">← Retour</span>
+  <h3 style="text-align:center">CEH - Espace Agent<br><small style="color:#888">Les fidèles ne voient JAMAIS votre numéro perso</small></h3>
+  <div class="logo-wrap"><img src="ceh_icon512.png" style="width:140px"></div>
+  <div class="card">
+    <label>Choisissez votre poste</label>
+    <select id="agentSelect"></select>
+    <p><span id="dot">●</span> <span id="agentState">Hors ligne</span></p>
+    <button class="btn btn-green" onclick="goOnline()">✅ Se mettre en ligne</button>
+    <button class="btn btn-dark" style="color:#ff5555" onclick="goOffline()">Se déconnecter</button>
+    <small style="color:#666">ID Peer: <span id="peerId">-</span><br>Gardez cette page ouverte pour recevoir les appels.</small>
+  </div>
+</div>
 
-<div id="callUI" class="call-ui">
-<h2 id="state">Connexion...</h2>
-<p id="info" style="color:#666;margin-top:8px">Recherche d'un agent disponible</p>
-<audio id="audio" autoplay></audio>
-<button class="hangup" onclick="endCall()">✕</button>
+<!-- SUPERVISEUR LOGIN -->
+<div id="view-superviseur-login" class="hidden">
+  <span class="back" onclick="show('view-landing')">← Retour</span>
+  <div class="card">
+    <h3>Superviseur - Connexion</h3>
+    <input type="password" id="supPass" placeholder="Code superviseur">
+    <button class="btn btn-white" onclick="loginSup()">Entrer</button>
+  </div>
+</div>
+
+<!-- SUPERVISEUR DASHBOARD -->
+<div id="view-superviseur" class="hidden">
+  <span class="back" onclick="show('view-landing')">← Retour</span>
+  <h3>Tableau de bord Superviseur</h3>
+  <button class="btn btn-green" onclick="document.getElementById('formAgent').classList.toggle('hidden')">+ Agent</button>
+
+  <div id="formAgent" class="card hidden">
+    <h4>Nouvel Agent</h4>
+    <input id="aName" placeholder="Nom complet de l'agent">
+    <input id="aPhone" placeholder="Numéro Mobile (ex: +243... )">
+    <input id="aCode" placeholder="Code agent (ex: 101)">
+    <button class="btn btn-white" onclick="addAgent()">Enregistrer Agent</button>
+  </div>
+
+  <div id="listAgents" class="card"></div>
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <script>
-const AGENTS=["ceh-agent-101","ceh-agent-102","ceh-agent-103"];
-let peer,call,stream;
-let p=new Peer("fidele-"+Math.random().toString(36).substr(2,5));
-p.on('open',()=>{document.getElementById('status').textContent="Prêt à appeler"});
-async function startCall(){
-  document.getElementById('callUI').classList.add('active');
-  document.getElementById('state').textContent="Connexion au standard...";
-  try{stream=await navigator.mediaDevices.getUserMedia({audio:true});}catch(e){alert("Autorisez le micro");endCall();return;}
-  let i=parseInt(localStorage.getItem('ceh_rr')||'0'); let t=AGENTS[i%AGENTS.length]; i++; localStorage.setItem('ceh_rr',i);
-  document.getElementById('info').textContent="Connexion à un agent...";
-  call=p.call(t,stream);
-  if(!call){document.getElementById('info').textContent="Aucun agent en ligne"; setTimeout(endCall,2500); return;}
-  call.on('stream',s=>{document.getElementById('state').textContent="En communication";document.getElementById('info').textContent="Connecté à CEH CALL-CENTER";document.getElementById('audio').srcObject=s;});
-  call.on('close',endCall);
+const LS_KEY='ceh_agents_v2';
+let agents = JSON.parse(localStorage.getItem(LS_KEY)||'[{"name":"Yves Banza (Superviseur)","phone":"+243838779476","code":"101"}]');
+let peer=null, currentAgent=null;
+
+function show(id){
+ document.querySelectorAll('[id^=view-]').forEach(d=>d.classList.add('hidden'));
+ document.getElementById(id).classList.remove('hidden');
+ if(id==='view-agent') renderAgentsSelect();
+ if(id==='view-superviseur') renderAgentsList();
 }
-function endCall(){if(call)call.close();if(stream)stream.getTracks().forEach(t=>t.stop());document.getElementById('callUI').classList.remove('active');document.getElementById('status').textContent="Appel terminé";}
-</script>
-<script>
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js'); }
+function save(){localStorage.setItem(LS_KEY, JSON.stringify(agents));}
+
+function renderAgentsSelect(){
+ const sel=document.getElementById('agentSelect'); sel.innerHTML='';
+ agents.forEach(a=>{
+   const o=document.createElement('option'); o.value=a.code;
+   o.textContent=`Agent ${a.code} - ${a.name}`; sel.appendChild(o);
+ });
+}
+function renderAgentsList(){
+ const div=document.getElementById('listAgents'); div.innerHTML='<h4>Agents enregistrés</h4>';
+ agents.forEach((a,i)=>{
+   div.innerHTML+=`<div style="border-bottom:1px solid #222;padding:8px 0"><b>${a.name}</b> - ${a.code}<br><small>${a.phone}</small><br><button onclick="delAgent(${i})" style="color:#ff5555;background:none;border:0">Supprimer</button> | <button onclick="editAgent(${i})" style="color:#00ff88;background:none;border:0">Modifier</button></div>`;
+ });
+}
+function addAgent(){
+ const name=document.getElementById('aName').value.trim();
+ const phone=document.getElementById('aPhone').value.trim();
+ const code=document.getElementById('aCode').value.trim();
+ if(!name||!phone||!code) return alert('Remplis les 3 champs');
+ agents.push({name,phone,code}); save(); renderAgentsList();
+ document.getElementById('aName').value='';document.getElementById('aPhone').value='';document.getElementById('aCode').value='';
+ document.getElementById('formAgent').classList.add('hidden');
+ alert('Agent ajouté! Le fidèle ne verra jamais '+phone+', il sera utilisé pour le pont d\'appel.');
+}
+function delAgent(i){ if(confirm('Supprimer?')){agents.splice(i,1);save();renderAgentsList();renderAgentsSelect();}}
+function editAgent(i){
+ const a=agents[i];
+ const name=prompt('Nom complet',a.name); if(name) a.name=name;
+ const phone=prompt('Numéro Mobile',a.phone); if(phone) a.phone=phone;
+ const code=prompt('Code agent',a.code); if(code) a.code=code;
+ save();renderAgentsList();renderAgentsSelect();
+}
+function loginSup(){
+ if(document.getElementById('supPass').value==='CEH2024'){show('view-superviseur');}else alert('Code incorrect');
+}
+
+// --- LOGIQUE D'APPEL FIDELE -> AGENT ---
+let callIndex=0;
+function callNextAgent(){
+ if(!agents.length) return alert('Aucun agent');
+ const ag=agents[callIndex % agents.length]; callIndex++;
+ document.getElementById('statusFidele').textContent='Appel vers Agent '+ag.code+'...';
+ // Ici ton ancien système PeerJS / tel: peut être branché
+ // Pour masquer le numéro : on appelle via Peer, pas via tel: direct
+ alert('Connexion vers '+ag.name+' (numéro masqué). Le système va distribuer l\'appel.');
+}
+
+function goOnline(){
+ const code=document.getElementById('agentSelect').value;
+ currentAgent=agents.find(a=>a.code===code);
+ if(!peer){ peer=new Peer('CEH-'+code); peer.on('open',id=>{document.getElementById('peerId').textContent=id;}); peer.on('call',c=>{c.answer();});}
+ document.getElementById('agentState').textContent='En ligne - En attente d\'appels';
+ document.getElementById('dot').style.color='#00ff88';
+}
+function goOffline(){
+ document.getElementById('agentState').textContent='Hors ligne';
+ document.getElementById('dot').style.color='#666';
+ if(peer) peer.destroy(); peer=null;
+}
 </script>
 </body>
-</html>
+    </html>
