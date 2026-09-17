@@ -1,0 +1,24 @@
+{
+  "name": "CEH Call Center",
+  "short_name": "CEH",
+  "description": "Centre Evangélique Hébron - Appel direct sans numéro",
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080808",
+  "theme_color": "#00FF88",
+  "icons": [
+    {
+      "src": "ceh_icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "ceh_icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
