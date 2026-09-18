@@ -77,7 +77,13 @@ input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #333;ba
     <p><span id="dot">●</span> <span id="agentState">Hors ligne</span> <small id="agentTimer"></small></p>
     <button class="btn btn-green" id="btnOnline" onclick="goOnline()">✅ Se mettre en ligne</button>
     <button class="btn btn-dark" id="btnOffline" onclick="askDisconnect()" style="color:#ff5a5a">Se déconnecter</button>
-    <p style="font-size:10px;color:#555;margin-top:10px">ID Peer: -<br>Gardez cette page ouverte pour recevoir les appels.</p>
+
+    <div class="row" style="margin-top:12px">
+      <button class="btn btn-outline-green" style="flex:1;font-size:14px" onclick="changeAgentPin()">🔒 Modifier mon code</button>
+      <button class="btn btn-dark" style="flex:1;font-size:14px" onclick="logoutAgent()">🔓 Verrouiller</button>
+    </div>
+
+    <p style="font-size:10px;color:#555;margin-top:12px">ID Peer: -<br>Gardez cette page ouverte pour recevoir les appels.</p>
   </div>
 </div>
 
