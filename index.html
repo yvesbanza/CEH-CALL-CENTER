@@ -12,13 +12,14 @@ body{background:#000;color:#fff;font-family:system-ui;margin:0;padding:12px}
 .btn-outline-green{background:#000;color:#00ff88;border:1px solid #00ff88}.btn-red{background:#ff2d55;color:#fff}
 .hidden{display:none}
 .logo-wrap{text-align:center;margin:30px 0}.logo-wrap img{width:85%;max-width:340px}
-.logo-fidele img{width:90%;max-width:380px;display:block;margin:0 auto}
+.logo-fidele img{width:85%;max-width:320px;display:block;margin:0 auto}
+.logo-agent{width:70%;max-width:260px;display:block;margin:10px auto 20px auto}
 .input-wrap{position:relative;margin-top:8px}.input-wrap input{width:100%;padding:12px 45px 12px 12px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;box-sizing:border-box}
 .eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;display:flex;align-items:center}
 input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;margin-top:8px;box-sizing:border-box}
 .back{color:#aaa;font-size:14px;cursor:pointer;display:inline-block;margin:6px 0 10px 0}.row{display:flex;gap:8px}
-.warning{background:#111;border:1px solid #ffcc00;color:#ffcc00;padding:12px;border-radius:12px;font-size:13px;display:flex;gap:10px}
-.warning a{color:#00ff88}
+.warning{border:1px solid #ffcc00;color:#ffcc00;padding:12px;border-radius:12px;font-size:13px;display:flex;gap:8px;line-height:1.4;background:#111}
+.warning a{color:#00ff88;text-decoration:underline}
 #incomingCall, #confirmDisconnect{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.92);z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
 #incomingCall.show, #confirmDisconnect.show{display:flex}
 .pulse{width:90px;height:90px;background:#00ff88;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;animation:pulse 1.5s infinite}
@@ -41,12 +42,15 @@ input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #333;ba
   <button class="btn btn-dark" onclick="show('view-sup-login')">3. SUPERVISEUR</button>
 </div>
 
+<!-- FIDELE - COMME CAPTURE 4 -->
 <div id="view-fidele" class="hidden">
   <span class="back" onclick="show('view-landing')">← Retour</span>
-  <div class="warning"><span>⚠️</span><div><b>Si l'appel ne passe pas?</b><br>Activez <b>1.1.1.1 WARP</b> puis réessayez.</div><span onclick="this.parentElement.style.display='none'" style="cursor:pointer;margin-left:auto">✕</span></div>
-  <div class="logo-fidele"><img src="ceh_icon512.png"></div>
-  <button class="btn btn-white" id="btnCallFidele" onclick="callFidele()" style="margin-top:40px">NOUS CONTACTER</button>
-  <p id="fideleStatus" style="text-align:center;margin-top:15px;color:#00ff88"></p>
+  <div class="warning"><span>⚠️</span><div><b>Si l'appel ne passe pas?</b><br>Sur Orange/Vodacom/Airtel, activez l'appli gratuite <b>1.1.1.1 WARP</b> sur Play Store, mettez-la en Connecté, puis réessayez.<br><a href="https://play.google.com/store/apps/details?id=com.cloudflare.onedotonedotonedotone">Télécharger 1.1.1.1 WARP</a></div></div>
+  <div class="logo-fidele" style="margin-top:20px"><img src="ceh_icon512.png"></div>
+  <p style="text-align:center;margin:8px 0 0 0;font-size:16px;letter-spacing:1px">CEH<br>CALL-CENTER</p>
+  <button class="btn btn-white" id="btnCallFidele" onclick="callFidele()" style="margin-top:30px">NOUS CONTACTER</button>
+  <p style="text-align:center"><span style="color:#aaa">+243 838 779 476</span><br><span style="color:#00ff88">Prêt à appeler</span></p>
+  <p id="fideleStatus" style="text-align:center;margin-top:10px;color:#00ff88"></p>
 </div>
 
 <div id="view-agent-login" class="hidden">
@@ -60,17 +64,21 @@ input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #333;ba
   </div>
 </div>
 
+<!-- AGENT - COMME CAPTURE 1 -->
 <div id="view-agent" class="hidden">
-  <span class="back" onclick="show('view-landing')">← Retour</span><h3 style="text-align:center;color:#00ff88" id="agentWelcome"></h3>
+  <span class="back" onclick="show('view-landing')">← Retour</span>
+  <div style="text-align:center;margin-top:5px">
+    <h2 style="margin:0">CEH - Espace Agent</h2>
+    <small style="color:#666">Les fidèles ne voient JAMAIS votre numéro perso</small>
+    <img src="ceh_icon512.png" class="logo-agent">
+    <h3 style="color:#00ff88;margin:5px 0" id="agentWelcome"></h3>
+  </div>
   <div class="card">
     <p><span id="dot">●</span> <span id="agentState">Hors ligne</span> <small id="agentTimer"></small></p>
-    <button class="btn btn-green" id="btnOnline" onclick="goOnline()">✅ En ligne</button>
-    <button class="btn btn-dark" id="btnOffline" onclick="askDisconnect()">Se déconnecter</button>
-    <hr>
-    <button class="btn btn-outline-green" onclick="changeAgentPin()">🔒 Modifier mon code</button>
-    <button class="btn btn-dark" onclick="logoutAgent()">🔓 Verrouiller</button>
+    <button class="btn btn-green" id="btnOnline" onclick="goOnline()">✅ Se mettre en ligne</button>
+    <button class="btn btn-dark" id="btnOffline" onclick="askDisconnect()" style="color:#ff5a5a">Se déconnecter</button>
+    <p style="font-size:10px;color:#555;margin-top:10px">ID Peer: -<br>Gardez cette page ouverte pour recevoir les appels.</p>
   </div>
-  <div class="card"><small>Statut: <span id="agentCallInfo">Aucun</span></small></div>
 </div>
 
 <div id="incomingCall">
@@ -81,7 +89,7 @@ input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #333;ba
 <div id="confirmDisconnect">
   <div class="card" style="width:100%;max-width:340px">
     <h3>Voulez-vous vous déconnecter?</h3>
-    <p style="color:#aaa;font-size:14px">Vous ne recevrez plus d'appels jusqu'à la prochaine connexion.</p>
+    <p style="color:#aaa;font-size:14px">Vous ne recevrez plus d'appels.</p>
     <div class="row"><button class="btn btn-red" style="flex:1" onclick="confirmDisconnectYes()">Oui</button><button class="btn btn-dark" style="flex:1" onclick="confirmDisconnectNo()">Non</button></div>
   </div>
 </div>
@@ -106,143 +114,36 @@ let agents=JSON.parse(localStorage.getItem(LS_AGENTS)||'[{"name":"Yves Banza","p
 let agentPins=JSON.parse(localStorage.getItem(LS_AGENT_PINS)||'null');
 if(!agentPins){agentPins={}; agents.forEach(a=>agentPins[a.code]="1234"); localStorage.setItem(LS_AGENT_PINS, JSON.stringify(agentPins));}
 let currentAgent=null, callCheckInterval=null, callTimerInterval=null, callSeconds=0;
-
-const EYE_SLASH=`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8a8a8a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 4.12A10.94 10.94 0 0 1 12 4c7 0 10 8 10 8a17.3 17.3 0 0 1-3.33 4.85"/><path d="M10.73 10.73a3 3 0 0 0 4.24 4.24"/><path d="M9.88 9.88A3 3 0 0 0 12 15a3 3 0 0 0 2.12-.88"/><path d="M14.12 14.12A3 3 0 0 1 9 12"/><path d="M2 2l20 20"/><path d="M10.5 5.5a10.94 10.94 0 0 0-2.5.5M4.5 9.5A17.3 17.3 0 0 0 2 12s3 8 10 8a10.94 10.94 0 0 0 3.5-.5"/></svg>`;
-const EYE_OPEN=`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8a8a8a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
-
+const EYE_SLASH=`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8a8a8a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 4.12A10.94 10.94 0 0 1 12 4c7 0 10 8 10 8a17.3 17.3 0 0 1-3.33 4.85"/><path d="M10.73 10.73a3 3 0 0 0 4.24 4.24"/><path d="M2 2l20 20"/><path d="M4.5 9.5A17.3 17.3 0 0 0 2 12s3 8 10 8a10.94 10.94 0 0 0 3.5-.5"/></svg>`;
+const EYE_OPEN=`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8a8a8a" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
 function initEyes(){document.querySelectorAll('.eye').forEach(e=>e.innerHTML=EYE_SLASH);}
-function toggleEye(id,el){
-  const i=document.getElementById(id);
-  if(i.type==='password'){i.type='text'; el.innerHTML=EYE_OPEN;} else {i.type='password'; el.innerHTML=EYE_SLASH;}
-}
+function toggleEye(id,el){const i=document.getElementById(id); if(i.type==='password'){i.type='text'; el.innerHTML=EYE_OPEN;} else {i.type='password'; el.innerHTML=EYE_SLASH;}}
 function resetTo1234(){agentPins={}; agents.forEach(a=>agentPins[a.code]="1234"); localStorage.setItem(LS_AGENT_PINS, JSON.stringify(agentPins)); alert('✅ 1234'); location.reload();}
 function show(id){document.querySelectorAll('[id^=view-]').forEach(d=>d.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');if(id.includes('agent'))renderSelects();if(id==='view-superviseur')renderAgentsList();}
 function saveAgents(){localStorage.setItem(LS_AGENTS,JSON.stringify(agents));} function savePins(){localStorage.setItem(LS_AGENT_PINS,JSON.stringify(agentPins));}
 function renderSelects(){const s=document.getElementById('agentSelectLogin');s.innerHTML='';agents.forEach(a=>{let o=document.createElement('option');o.value=a.code;o.textContent=`Agent ${a.code} - ${a.name}`;s.appendChild(o);});}
-
-function loginAgent(){
-  const code=document.getElementById('agentSelectLogin').value,pin=document.getElementById('agentPin').value.trim();
-  if(agentPins[code]===pin){
-    currentAgent=agents.find(a=>a.code===code);
-    localStorage.setItem(LS_SESSION, code);
-    document.getElementById('agentWelcome').textContent=currentAgent.name;
-    show('view-agent');
-    goOnline();
-  } else document.getElementById('agentLoginMsg').textContent='Incorrect';
-}
-function changeAgentPin(){const oldP=prompt('Ancien:'); if(oldP!==agentPins[currentAgent.code]) return alert('Faux'); const newP=prompt('Nouveau:'); if(!newP||newP.length<4) return; const c=prompt('Confirme:'); if(newP!==c) return; agentPins[currentAgent.code]=newP; savePins(); alert('Nouveau: '+newP);}
-function logoutAgent(){goOfflineInternal(); localStorage.removeItem(LS_SESSION); show('view-agent-login');}
-
-// Déconnexion avec confirmation
+function loginAgent(){const code=document.getElementById('agentSelectLogin').value,pin=document.getElementById('agentPin').value.trim(); if(agentPins[code]===pin){currentAgent=agents.find(a=>a.code===code); localStorage.setItem(LS_SESSION, code); document.getElementById('agentWelcome').textContent=currentAgent.name; show('view-agent'); goOnline();} else document.getElementById('agentLoginMsg').textContent='Incorrect';}
 function askDisconnect(){document.getElementById('confirmDisconnect').classList.add('show');}
 function confirmDisconnectNo(){document.getElementById('confirmDisconnect').classList.remove('show');}
-function confirmDisconnectYes(){
-  document.getElementById('confirmDisconnect').classList.remove('show');
-  goOfflineInternal();
-  localStorage.removeItem(LS_SESSION);
-  localStorage.removeItem(LS_ONLINE);
-  show('view-landing');
-  // Ferme l'app si possible (PWA)
-  setTimeout(()=>{ try{window.close();}catch(e){} },300);
-}
-function goOfflineInternal(){
-  document.getElementById('agentState').textContent='Hors ligne';
-  document.getElementById('dot').style.color='#666';
-  let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]'); online=online.filter(c=>c!==currentAgent?.code); localStorage.setItem(LS_ONLINE, JSON.stringify(online));
-  if(callCheckInterval) clearInterval(callCheckInterval);
-  if(callTimerInterval) clearInterval(callTimerInterval);
-  document.getElementById('incomingCall').classList.remove('show');
-  const info=document.getElementById('agentCallInfo'); if(info) info.textContent='Hors ligne';
-}
-
-function goOnline(){
-  if(!currentAgent) return;
-  document.getElementById('agentState').textContent='En ligne - En attente d\'appel...';
-  document.getElementById('dot').style.color='#00ff88';
-  let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]');
-  if(!online.includes(currentAgent.code)){online.push(currentAgent.code); localStorage.setItem(LS_ONLINE, JSON.stringify(online));}
-  document.getElementById('agentCallInfo').textContent='En attente d\'appel fidèle...';
-  if(Notification && Notification.permission!=='granted'){Notification.requestPermission();}
-  if(callCheckInterval) clearInterval(callCheckInterval);
-  callCheckInterval=setInterval(checkIncomingCall, 1500);
-}
+function confirmDisconnectYes(){document.getElementById('confirmDisconnect').classList.remove('show'); goOfflineInternal(); localStorage.removeItem(LS_SESSION); localStorage.removeItem(LS_ONLINE); show('view-landing'); setTimeout(()=>{try{window.close();}catch(e){}},300);}
+function goOfflineInternal(){document.getElementById('agentState').textContent='Hors ligne'; document.getElementById('dot').style.color='#666'; let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]'); online=online.filter(c=>c!==currentAgent?.code); localStorage.setItem(LS_ONLINE, JSON.stringify(online)); if(callCheckInterval) clearInterval(callCheckInterval); if(callTimerInterval) clearInterval(callTimerInterval); document.getElementById('incomingCall').classList.remove('show');}
+function goOnline(){if(!currentAgent) return; document.getElementById('agentState').textContent='En ligne - En attente...'; document.getElementById('dot').style.color='#00ff88'; let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]'); if(!online.includes(currentAgent.code)){online.push(currentAgent.code); localStorage.setItem(LS_ONLINE, JSON.stringify(online));} if(Notification && Notification.permission!=='granted'){Notification.requestPermission();} if(callCheckInterval) clearInterval(callCheckInterval); callCheckInterval=setInterval(checkIncomingCall, 1500);}
 function goOffline(){askDisconnect();}
-
-function checkIncomingCall(){
-  const call=JSON.parse(localStorage.getItem(LS_CALL)||'null');
-  if(call && call.status==='ringing'){
-    document.getElementById('incomingCall').classList.add('show');
-    document.getElementById('callerInfo').textContent='Fidèle appelle - '+new Date(call.time).toLocaleTimeString();
-    document.getElementById('agentCallInfo').textContent='📞 APPEL ENTRANT!';
-    if(navigator.vibrate) navigator.vibrate([300,100,300]);
-    if(Notification && Notification.permission==='granted' && document.hidden){
-      new Notification('CEH Appel entrant', {body:'Un fidèle vous appelle, ouvrez l\'app pour décrocher'});
-    }
-  }
-}
-function agentAcceptCall(){
-  const call=JSON.parse(localStorage.getItem(LS_CALL)||'{}');
-  call.status='accepted'; call.agent=currentAgent.code; call.agentName=currentAgent.name;
-  localStorage.setItem(LS_CALL, JSON.stringify(call));
-  document.getElementById('incomingCall').classList.remove('show');
-  document.getElementById('agentCallInfo').textContent='✅ En communication avec Fidèle';
-  document.getElementById('agentState').textContent='En appel...';
-  startTimer();
-}
-function agentRejectCall(){
-  const call=JSON.parse(localStorage.getItem(LS_CALL)||'{}');
-  call.status='rejected'; localStorage.setItem(LS_CALL, JSON.stringify(call));
-  document.getElementById('incomingCall').classList.remove('show');
-  document.getElementById('agentCallInfo').textContent='Appel refusé';
-  setTimeout(()=>{localStorage.removeItem(LS_CALL); document.getElementById('agentCallInfo').textContent='En attente...';},2000);
-}
+function checkIncomingCall(){const call=JSON.parse(localStorage.getItem(LS_CALL)||'null'); if(call && call.status==='ringing'){document.getElementById('incomingCall').classList.add('show'); document.getElementById('callerInfo').textContent='Fidèle appelle - '+new Date(call.time).toLocaleTimeString(); if(navigator.vibrate) navigator.vibrate([300,100,300]); if(Notification && Notification.permission==='granted' && document.hidden){new Notification('CEH Appel entrant', {body:'Un fidèle vous appelle'});}}}
+function agentAcceptCall(){const call=JSON.parse(localStorage.getItem(LS_CALL)||'{}'); call.status='accepted'; call.agent=currentAgent.code; call.agentName=currentAgent.name; localStorage.setItem(LS_CALL, JSON.stringify(call)); document.getElementById('incomingCall').classList.remove('show'); document.getElementById('agentState').textContent='En appel...'; startTimer();}
+function agentRejectCall(){const call=JSON.parse(localStorage.getItem(LS_CALL)||'{}'); call.status='rejected'; localStorage.setItem(LS_CALL, JSON.stringify(call)); document.getElementById('incomingCall').classList.remove('show'); setTimeout(()=>{localStorage.removeItem(LS_CALL);},2000);}
 function startTimer(){callSeconds=0; if(callTimerInterval) clearInterval(callTimerInterval); callTimerInterval=setInterval(()=>{callSeconds++; const m=Math.floor(callSeconds/60), s=callSeconds%60; document.getElementById('agentTimer').textContent=`(${m}:${s<10?'0':''}${s})`;},1000);}
-function callFidele(){
-  const btn=document.getElementById('btnCallFidele'), status=document.getElementById('fideleStatus');
-  let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]');
-  if(online.length===0){status.innerHTML='❌ Aucun agent en ligne.'; status.style.color='#ff5555'; return;}
-  const call={status:'ringing', time:Date.now(), agent:null};
-  localStorage.setItem(LS_CALL, JSON.stringify(call));
-  btn.textContent='📞 Appel en cours...'; btn.disabled=true;
-  status.innerHTML='🔍 Ça sonne chez l\'agent <b>'+online[0]+'</b>'; status.style.color='#ffcc00';
-  let check=setInterval(()=>{
-    const c=JSON.parse(localStorage.getItem(LS_CALL)||'{}');
-    if(c.status==='accepted'){clearInterval(check); status.innerHTML='✅ Agent <b>'+c.agentName+'</b> a décroché!'; status.style.color='#00ff88'; btn.textContent='✅ En communication'; setTimeout(()=>{status.innerHTML+='<br><button class="btn btn-red" onclick="endFideleCall()">Raccrocher</button>';},500);}
-    if(c.status==='rejected'){clearInterval(check); status.innerHTML='❌ Occupé...'; setTimeout(()=>{localStorage.removeItem(LS_CALL); btn.textContent='NOUS CONTACTER'; btn.disabled=false; callFidele();},2000);}
-  },1000);
-  setTimeout(()=>{const c=JSON.parse(localStorage.getItem(LS_CALL)||'{}'); if(c.status==='ringing'){clearInterval(check); localStorage.removeItem(LS_CALL); status.textContent='⏰ Pas de réponse.'; btn.textContent='NOUS CONTACTER'; btn.disabled=false;}},30000);
-}
+function callFidele(){const btn=document.getElementById('btnCallFidele'), status=document.getElementById('fideleStatus'); let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]'); if(online.length===0){status.innerHTML='❌ Aucun agent en ligne.'; status.style.color='#ff5555'; return;} const call={status:'ringing', time:Date.now()}; localStorage.setItem(LS_CALL, JSON.stringify(call)); btn.textContent='📞 Appel en cours...'; btn.disabled=true; status.innerHTML='🔍 Ça sonne chez l\'agent <b>'+online[0]+'</b>'; status.style.color='#ffcc00'; let check=setInterval(()=>{const c=JSON.parse(localStorage.getItem(LS_CALL)||'{}'); if(c.status==='accepted'){clearInterval(check); status.innerHTML='✅ Agent <b>'+c.agentName+'</b> a décroché!'; status.style.color='#00ff88'; btn.textContent='✅ En communication'; setTimeout(()=>{status.innerHTML+='<br><button class="btn btn-red" onclick="endFideleCall()">Raccrocher</button>';},500);} if(c.status==='rejected'){clearInterval(check); status.innerHTML='❌ Occupé...'; setTimeout(()=>{localStorage.removeItem(LS_CALL); btn.textContent='NOUS CONTACTER'; btn.disabled=false;},2000);}},1000); setTimeout(()=>{const c=JSON.parse(localStorage.getItem(LS_CALL)||'{}'); if(c.status==='ringing'){clearInterval(check); localStorage.removeItem(LS_CALL); status.textContent='⏰ Pas de réponse.'; btn.textContent='NOUS CONTACTER'; btn.disabled=false;}},30000);}
 function endFideleCall(){localStorage.removeItem(LS_CALL); document.getElementById('btnCallFidele').textContent='NOUS CONTACTER'; document.getElementById('btnCallFidele').disabled=false; document.getElementById('fideleStatus').innerHTML='Appel terminé.';}
 function loginSup(){const pin=document.getElementById('supPin').value.trim(), saved=localStorage.getItem(LS_SUP_PIN); if(!saved){document.getElementById('supMsg').textContent='Pas de code, tape puis Créer'; return;} if(pin===saved) show('view-superviseur'); else document.getElementById('supMsg').textContent='Incorrect';}
 function createSupPin(){const pin=document.getElementById('supPin').value.trim(); if(!pin||pin.length<4){document.getElementById('supMsg').textContent='Tape 4 chiffres'; return;} if(localStorage.getItem(LS_SUP_PIN)){document.getElementById('supMsg').textContent='Existe déjà'; return;} localStorage.setItem(LS_SUP_PIN,pin); alert('Créé: '+pin); show('view-superviseur');}
-function modifySupPin(){const saved=localStorage.getItem(LS_SUP_PIN); if(!saved) return; const oldP=prompt('Ancien:'); if(oldP!==saved) return alert('Faux'); const newP=document.getElementById('supPin').value.trim(); if(!newP||newP.length<4) return alert('Tape nouveau'); localStorage.setItem(LS_SUP_PIN,newP); alert('Modifié: '+newP);}
-function renderAgentsList(){
-  const d=document.getElementById('listAgents');
-  d.innerHTML='<h4>Agents ('+agents.length+')</h4>';
-  agents.forEach((a,i)=>{
-    d.innerHTML+=`
-      <div class="agent-row">
-        <div class="agent-info"><b>${a.name} - ${a.code}</b><br><small style="color:#aaa">${a.phone}</small></div>
-        <div class="icon-box">
-          <div class="icon-btn" onclick="editAgent(${i})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
-          <div class="icon-btn delete" onclick="delAgent(${i})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></div>
-        </div>
-      </div>`;
-  });
-}
+function modifySupPin(){const saved=localStorage.getItem(LS_SUP_PIN); if(!saved) return; const oldP=prompt('Ancien:'); if(oldP!==saved) return alert('Faux'); const newP=document.getElementById('supPin').value.trim(); if(!newP||newP.length<4) return alert('Tape nouveau'); localStorage.setItem(LS_SUP_PIN,newP); alert('Modifié');}
+function renderAgentsList(){const d=document.getElementById('listAgents'); d.innerHTML='<h4>Agents ('+agents.length+')</h4>'; agents.forEach((a,i)=>{d.innerHTML+=`<div class="agent-row"><div class="agent-info"><b>${a.name} - ${a.code}</b><br><small style="color:#aaa">${a.phone}</small></div><div class="icon-box"><div class="icon-btn" onclick="editAgent(${i})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="icon-btn delete" onclick="delAgent(${i})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></div></div></div>`;});}
 function addAgent(){const n=document.getElementById('aName').value.trim(),ph=document.getElementById('aPhone').value.trim(),c=document.getElementById('aCode').value.trim();if(!n||!ph||!c)return alert('Remplis');agents.push({name:n,phone:ph,code:c});agentPins[c]="1234";saveAgents();savePins();renderAgentsList();document.getElementById('formAgent').classList.add('hidden');}
 function delAgent(i){if(confirm('Supprimer '+agents[i].name+'?')){delete agentPins[agents[i].code];savePins();agents.splice(i,1);saveAgents();renderAgentsList();}}
 function editAgent(i){const a=agents[i]; const n=prompt('Nom:',a.name); if(n===null) return; if(n) a.name=n; const ph=prompt('Téléphone:',a.phone); if(ph===null) return; if(ph) a.phone=ph; const c=prompt('Code:',a.code); if(c===null) return; if(c && c!==a.code){agentPins[c]=agentPins[a.code]||"1234"; delete agentPins[a.code]; a.code=c;} saveAgents(); savePins(); renderAgentsList();}
-
 renderSelects(); initEyes();
-// Auto-login si session existe (reste connecté)
-(function autoLogin(){
-  const sess=localStorage.getItem(LS_SESSION);
-  if(sess && agentPins[sess]){
-    const ag=agents.find(a=>a.code===sess);
-    if(ag){currentAgent=ag; document.getElementById('agentWelcome').textContent=ag.name; show('view-agent'); goOnline();}
-  }
-})();
+(function autoLogin(){const sess=localStorage.getItem(LS_SESSION); if(sess && agentPins[sess]){const ag=agents.find(a=>a.code===sess); if(ag){currentAgent=ag; document.getElementById('agentWelcome').textContent=ag.name; show('view-agent'); goOnline();}}})();
 </script>
 </body>
-  </html>
+                                       </html>
