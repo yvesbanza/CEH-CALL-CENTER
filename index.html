@@ -153,4 +153,40 @@ function endAgentCall(){ if(pc) pc.close(); if(localStream) localStream.getTrack
 async function callFidele(){
   const btn=document.getElementById('btnCallFidele'), status=document.getElementById('fideleStatus');
   let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]');
-  if(online.length===0){ status.innerHTML='❌ Aucun agent en ligne.'; status.style.color='#ff5555'; re
+  if(online.length===0){ status.innerHTML='❌ Aucun agent en ligne.'; status.style.color='#ff5555'; return; }
+  try{ localStream=await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){ status.textContent='Micro refusé'; return; }
+  pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
+  localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
+  pc.ontrack=e=>{ document.getElementById('remoteAudioFidele').srcObject=e.streams[0]; };
+  pc.onicecandidate=e=>{ if(e.candidate){ let c=JSON.parse(localStorage.getItem(LS_CALL)||'{}'); c.iceFidele=c.iceFidele||[]; c.iceFidele.push(e.candidate); localStorage.setItem(LS_CALL, JSON.stringify(c)); }};
+  const offer=await pc.createOffer(); await pc.setLocalDescription(offer);
+  localStorage.setItem(LS_CALL, JSON.stringify({status:'ringing', time:Date.now(), offer:offer}));
+  btn.textContent='📞 Appel en cours...'; btn.disabled=true; status.textContent='🔍 Ça sonne chez l\'agent...'; status.style.color='#ffcc00';
+  document.getElementById('inCallFideleView').classList.add('show');
+  startInCallTimer();
+  let check=setInterval(async()=>{
+    let c=JSON.parse(localStorage.getItem(LS_CALL)||'{}');
+    if(c.answer && pc &&!pc.remoteDescription){ await pc.setRemoteDescription(new RTCSessionDescription(c.answer)); status.textContent='✅ Connecté'; document.getElementById('fideleReady').textContent='En communication'; }
+    if(c.iceAgent && c.iceAgent.length){ for(let ice of c.iceAgent){ try{ await pc.addIceCandidate(ice);}catch(e){} } c.iceAgent=[]; localStorage.setItem(LS_CALL, JSON.stringify(c)); }
+    if(c.status==='rejected'){ clearInterval(check); status.textContent='Agent occupé'; document.getElementById('inCallFideleView').classList.remove('show'); btn.textContent='NOUS CONTACTER'; btn.disabled=false; localStorage.removeItem(LS_CALL); }
+    if(c.status==='ended'){ clearInterval(check); endFideleCall(); }
+  },800);
+  setTimeout(()=>{ let c=JSON.parse(localStorage.getItem(LS_CALL)||'{}'); if(c.status==='ringing'){ clearInterval(check); status.textContent='⏰ Pas de réponse'; document.getElementById('inCallFideleView').classList.remove('show'); btn.textContent='NOUS CONTACTER'; btn.disabled=false; localStorage.removeItem(LS_CALL); if(pc) pc.close(); } },30000);
+}
+function toggleFideleMute(){ if(!localStream) return; fideleMuted=!fideleMuted; localStream.getAudioTracks()[0].enabled=!fideleMuted; document.getElementById('fideleMute').classList.toggle('active',fideleMuted); }
+function toggleFideleSpeaker(){ fideleSpeaker=!fideleSpeaker; let audio=document.getElementById('remoteAudioFidele'); if(audio.setSinkId){ audio.setSinkId(fideleSpeaker?'default':'').catch(()=>{}); } document.getElementById('fideleSpeaker').classList.toggle('active',fideleSpeaker); }
+function endFideleCall(){ if(pc) pc.close(); if(localStream) localStream.getTracks().forEach(t=>t.stop()); pc=null; localStream=null; document.getElementById('inCallFideleView').classList.remove('show'); document.getElementById('inCallView').classList.remove('show'); document.getElementById('btnCallFidele').textContent='NOUS CONTACTER'; document.getElementById('btnCallFidele').disabled=false; document.getElementById('fideleStatus').textContent='Appel terminé'; document.getElementById('fideleReady').textContent='Prêt à appeler'; localStorage.setItem(LS_CALL, JSON.stringify({status:'ended'})); setTimeout(()=>localStorage.removeItem(LS_CALL),1000); if(inCallInterval) clearInterval(inCallInterval); }
+function loginSup(){const pin=document.getElementById('supPin').value.trim(), saved=localStorage.getItem(LS_SUP_PIN); if(!saved){document.getElementById('supMsg').textContent='Pas de code, tape puis Créer'; return;} if(pin===saved) show('view-superviseur'); else document.getElementById('supMsg').textContent='Incorrect';}
+function createSupPin(){const pin=document.getElementById('supPin').value.trim(); if(!pin||pin.length<4){document.getElementById('supMsg').textContent='Tape 4 chiffres'; return;} if(localStorage.getItem(LS_SUP_PIN)){document.getElementById('supMsg').textContent='Existe déjà'; return;} localStorage.setItem(LS_SUP_PIN,pin); alert('Créé: '+pin); show('view-superviseur');}
+function modifySupPin(){const saved=localStorage.getItem(LS_SUP_PIN); if(!saved) return; const oldP=prompt('Ancien:'); if(oldP!==saved) return alert('Faux'); const newP=document.getElementById('supPin').value.trim(); if(!newP||newP.length<4) return alert('Tape nouveau'); localStorage.setItem(LS_SUP_PIN,newP); alert('Modifié');}
+function renderAgentsList(){const d=document.getElementById('listAgents'); d.innerHTML='<h4>Agents ('+agents.length+')</h4>'; agents.forEach((a,i)=>{d.innerHTML+=`<div class="agent-row"><div class="agent-info"><b>${a.name} - ${a.code}</b><br><small style="color:#aaa">${a.phone}</small></div><div class="icon-box"><div class="icon-btn" onclick="editAgent(${i})"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="icon-btn delete" onclick="delAgent(${i})"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></div></div></div>`;});}
+function addAgent(){const n=document.getElementById('aName').value.trim(),ph=document.getElementById('aPhone').value.trim(),c=document.getElementById('aCode').value.trim();if(!n||!ph||!c)return alert('Remplis');agents.push({name:n,phone:ph,code:c});agentPins[c]="1234";saveAgents();savePins();renderAgentsList();document.getElementById('formAgent').classList.add('hidden');}
+function delAgent(i){if(confirm('Supprimer '+agents[i].name+'?')){delete agentPins[agents[i].code];savePins();agents.splice(i,1);saveAgents();renderAgentsList();}}
+function editAgent(i){const a=agents[i]; const n=prompt('Nom:',a.name); if(n===null) return; if(n) a.name=n; const ph=prompt('Téléphone:',a.phone); if(ph===null) return; if(ph) a.phone=ph; const c=prompt('Code:',a.code); if(c===null) return; if(c && c!==a.code){agentPins[c]=agentPins[a.code]||"1234"; delete agentPins[a.code]; a.code=c;} saveAgents(); savePins(); renderAgentsList();}
+function changeAgentPin(){const oldP=prompt('Ancien:'); if(oldP!==agentPins[currentAgent.code]) return alert('Faux'); const newP=prompt('Nouveau:'); if(!newP||newP.length<4) return; const c=prompt('Confirme:'); if(newP!==c) return; agentPins[currentAgent.code]=newP; savePins(); alert('Nouveau: '+newP);}
+function logoutAgent(){goOfflineInternal(); localStorage.removeItem(LS_SESSION); show('view-agent-login');}
+renderSelects(); initEyes();
+(function autoLogin(){const sess=localStorage.getItem(LS_SESSION); if(sess && agentPins[sess]){const ag=agents.find(a=>a.code===sess); if(ag){currentAgent=ag; document.getElementById('agentWelcome').textContent=ag.name; show('view-agent'); goOnline();}}})();
+</script>
+</body>
+</html>
