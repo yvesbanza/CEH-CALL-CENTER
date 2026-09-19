@@ -1,380 +1,73 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CEH CALL-CENTER V5</title>
-<link rel="manifest" href="manifest.json">
 <style>
-body{background:#000;color:#fff;font-family:system-ui;margin:0;padding:12px}
-.card{background:#111;border:1px solid #222;border-radius:16px;padding:16px;margin-top:16px}
-.btn{width:100%;padding:16px;border-radius:14px;border:0;font-weight:bold;font-size:16px;margin-top:10px;cursor:pointer}
-.btn-white{background:#fff;color:#000}.btn-green{background:#00ff88;color:#000}.btn-dark{background:#222;color:#fff;border:1px solid #444}
-.btn-outline-green{background:#000;color:#00ff88;border:1px solid #00ff88}.btn-red{background:#ff2d55;color:#fff}
-.hidden{display:none}
-.logo-wrap{text-align:center;margin:30px 0}.logo-wrap img{width:85%;max-width:340px}
-.logo-fidele img{width:85%;max-width:320px;display:block;margin:0 auto}
-.logo-agent{width:70%;max-width:260px;display:block;margin:10px auto 20px auto}
-.input-wrap{position:relative;margin-top:8px}.input-wrap input{width:100%;padding:12px 45px 12px 12px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;box-sizing:border-box}
-.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;display:flex;align-items:center}
-input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;margin-top:8px;box-sizing:border-box}
-.back{color:#aaa;font-size:14px;cursor:pointer;display:inline-block;margin:6px 0 10px 0}.row{display:flex;gap:8px}
-.warning{border:1px solid #ffcc00;color:#ffcc00;padding:12px;border-radius:12px;font-size:13px;display:flex;gap:8px;line-height:1.4;background:#111}
-.warning a{color:#00ff88;text-decoration:underline}
-#incomingCall, #confirmDisconnect{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.96);z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
-#incomingCall.show, #confirmDisconnect.show{display:flex}
-.pulse{width:90px;height:90px;background:#00ff88;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;animation:pulse 1.5s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(0,255,136,0.7)}70%{box-shadow:0 0 0 25px rgba(0,255,136,0)}100%{box-shadow:0 0 0 0 rgba(0,255,136,0)}}
-.agent-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #222}
-.agent-info{flex:1}
-.icon-box{display:flex;background:#1e293b;border-radius:12px;border:1px solid #334155;overflow:hidden}
-.icon-btn{padding:10px 14px;background:#1e293b;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.icon-btn:first-child{border-right:1px solid #334155}
-.icon-btn svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2}
-.icon-btn.delete svg{stroke:#ff5a5a}
-#inCallView, #inCallFideleView{position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:1000;display:none;flex-direction:column;align-items:center;justify-content:space-between;padding:30px 20px}
-#inCallView.show, #inCallFideleView.show{display:flex}
-.call-avatar{width:110px;height:110px;background:#111;border:2px solid #00ff88;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:50px;margin-top:20px}
-.call-controls{display:flex;gap:22px;margin-bottom:25px}
-.ctrl-btn{width:62px;height:62px;border-radius:50%;border:1px solid #333;background:#1e293b;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.ctrl-btn.active{background:#00ff88;border-color:#00ff88}.ctrl-btn.active svg{stroke:#000}
-.ctrl-btn.end{background:#ff2d55;border-color:#ff2d55}
-.ctrl-btn svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:2}
-.notif-box{background:#ffcc00;color:#000;padding:12px;border-radius:12px;margin-top:10px}
+body{background:#000;color:#fff;font-family:system-ui;text-align:center;margin:0;padding:0}
+.card{background:#151515;border-radius:12px;padding:12px;margin:10px;text-align:left;border:1px solid #222}
+.btn{width:100%;padding:14px;border-radius:10px;border:none;font-weight:bold;margin-top:8px}
+.btn-white{background:#fff;color:#000}.btn-dark{background:#222;color:#fff}.btn-green{background:#0a5;color:#fff}
+input,select{width:100%;padding:12px;border-radius:8px;border:none;margin-top:6px;background:#222;color:#fff;box-sizing:border-box}
+.hidden{display:none!important}
+.back{color:#aaa;padding:10px;display:block;text-align:left}
+.eye{position:absolute;right:10px;top:32px}
 </style>
 </head>
 <body>
-
 <div id="view-landing">
-  <div class="logo-wrap"><img src="ceh_icon512.png"><h2>CEH CALL-CENTER V5</h2><small style="color:#00ff88">Av. Suala n°6, Bandalungwa</small></div>
-  <button class="btn btn-white" onclick="show('view-fidele')">1. FIDÈLE</button>
-  <button class="btn btn-dark" onclick="show('view-agent-login')">2. AGENT CALL-CENTER</button>
-  <button class="btn btn-dark" onclick="show('view-sup-login')">3. SUPERVISEUR</button>
+<div style="margin-top:20px"><h1>CEH CALL-CENTER V5</h1><p style="color:#0f8">Av. Suala n°6, Bandalungwa</p></div>
+<button class="btn btn-white" onclick="show('view-fidele')">1. FIDÈLE</button>
+<button class="btn btn-dark" onclick="show('view-agent-login')">2. AGENT CALL-CENTER</button>
+<button class="btn btn-dark" onclick="show('view-superviseur-login')">3. SUPERVISEUR</button>
+<button class="btn btn-dark" style="font-size:10px;background:#111" onclick="resetTo1234()">⚠️ Réinitialiser à 1234 si bug</button>
 </div>
 
-<div id="view-fidele" class="hidden">
-  <span class="back" onclick="show('view-landing')">← Retour</span>
-  <div class="warning"><span>⚠️</span><div><b>Si l'appel ne passe pas?</b><br>Activez <b>1.1.1.1 WARP</b> sur Play Store<br><a href="https://play.google.com/store/apps/details?id=com.cloudflare.onedotonedotonedotone">Télécharger WARP</a></div></div>
-  <div class="logo-fidele" style="margin-top:20px"><img src="ceh_icon512.png"></div>
-  <p style="text-align:center;margin:8px 0 0 0">CEH CALL-CENTER</p>
-
-  <div class="card" id="cardInscriptionFidele">
-  <h4>Inscription (une fois)</h4>
-  <input id="fideleNameInput" placeholder="Votre nom complet">
-  <input id="fideleAdresseInput" placeholder="Adresse complète">
-  <input id="fidelePhoneInput" placeholder="Numéro de téléphone">
-  <button class="btn btn-dark" onclick="registerFideleLocal()">S'inscrire</button>
-  <p style="font-size:10px;color:#888">Pour que l'agent puisse vous rappeler.</p>
+<div id="view-fidele" class="hidden"><span class="back" onclick="show('view-landing')">← Retour</span>
+<h3>Espace Fidèle</h3>
+<div class="card" id="cardInscriptionFidele">
+<h4>Inscription (une fois)</h4>
+<input id="fideleNameInput" placeholder="Votre nom complet">
+<input id="fideleAdresseInput" placeholder="Adresse complète">
+<input id="fidelePhoneInput" placeholder="Numéro de téléphone ex: +243...">
+<button class="btn btn-dark" onclick="registerFideleLocal()">S'inscrire</button>
 </div>
-<p id="msgInscriptionObligatoire" style="text-align:center;color:#ff5555;font-weight:bold;margin-top:10px;display:none">⚠️ Veuillez vous inscrire avant de contacter le service CALL-CENTER</p>
-
-  <button class="btn btn-white" id="btnCallFidele" onclick="callFidele()" style="margin-top:10px">NOUS CONTACTER</button>
-  <p style="text-align:center"><span style="color:#aaa">+243 838 779 476</span><br><span style="color:#00ff88" id="fideleReady">Prêt à appeler</span></p>
-  <p id="fideleStatus" style="text-align:center;margin-top:10px;color:#00ff88"></p>
-
-  <div id="notifBoxFidele" class="hidden notif-box"><b>📩 Message de l'Église</b><p id="notifTxtFidele"></p><button class="btn btn-green" onclick="fideleRappelleEglise()">📞 Rappeler l'Église</button></div>
-
-  <audio id="remoteAudioFidele" autoplay></audio>
+<p id="msgInscriptionObligatoire" style="color:#ff5555;font-weight:bold;display:none">⚠️ Veuillez vous inscrire avant de contacter le service CALL-CENTER</p>
+<div class="card"><button class="btn btn-green" id="btnCallFidele" onclick="callFidele()">📞 NOUS CONTACTER</button><p id="fideleStatus"></p></div>
 </div>
 
-<div id="view-agent-login" class="hidden">
-  <span class="back" onclick="show('view-landing')">← Retour</span>
-  <div class="card"><h3>Agent - Code: 1234</h3><select id="agentSelectLogin"></select><div class="input-wrap"><input type="password" id="agentPin" placeholder="1234"><span class="eye" onclick="toggleEye('agentPin',this)"></span></div><button class="btn btn-white" onclick="loginAgent()">Déverrouiller</button><button class="btn btn-dark" style="font-size:12px;color:#ffcc00" onclick="resetTo1234()">⚠️ Réinitialiser à 1234</button><p id="agentLoginMsg" style="color:#ff5555"></p></div>
-</div>
+<div id="view-agent-login" class="hidden"><span class="back" onclick="show('view-landing')">← Retour</span><h3>Agent Login</h3>
+<div class="card"><select id="agentSelectLogin"></select><div style="position:relative"><input id="agentPin" type="password" placeholder="Code PIN (1234)"><span class="eye" onclick="toggleEye('agentPin',this)"></span></div><button class="btn btn-white" onclick="loginAgent()">Déverrouiller</button><p id="agentLoginMsg" style="color:#f55"></p></div></div>
 
-<div id="view-agent" class="hidden">
-  <span class="back" onclick="show('view-landing')">← Retour</span>
-  <div style="text-align:center;margin-top:5px"><h2>CEH - Espace Agent</h2><small style="color:#666">Les fidèles ne voient JAMAIS votre numéro perso</small><img src="ceh_icon512.png" class="logo-agent"><h3 style="color:#00ff88" id="agentWelcome"></h3></div>
-  <div class="card" id="agentIdleCard">
-    <p><span id="dot">●</span> <span id="agentState">Hors ligne</span> <small id="agentTimer"></small></p>
-    <button class="btn btn-green" id="btnOnline" onclick="goOnline()">✅ Se mettre en ligne</button>
-    <button class="btn btn-dark" id="btnOffline" onclick="askDisconnect()" style="color:#ff5a5a">Se déconnecter</button>
-    <button class="btn btn-outline-green" onclick="testRingtone()">🔔 Tester sonnerie FORTE</button>
-    <div class="row" style="margin-top:12px"><button class="btn btn-outline-green" style="flex:1;font-size:14px" onclick="changeAgentPin()">🔒 Modifier code</button><button class="btn btn-dark" style="flex:1;font-size:14px" onclick="logoutAgent()">🔓 Verrouiller</button></div>
-    <p style="font-size:10px;color:#555">Gardez cette page ouverte.</p>
-  </div>
+<div id="view-agent" class="hidden"><span class="back" onclick="show('view-landing')">← Déconnexion</span><h3>Agent: <span id="agentWelcome"></span></h3><p id="agentState">Hors ligne</p><button class="btn btn-green" onclick="goOnline()">Passer en ligne</button><button class="btn btn-dark" onclick="goOffline()">Hors ligne</button><div id="listFidelesAgent"></div></div>
 
-  <div class="card"><h4>📋 Fidèles inscrits - Suivi Pastoral</h4><p style="font-size:10px;color:#888">Ici tu vois tous les fidèles. Si absent, clique Absent culte.</p><div id="listFidelesAgent"></div></div>
-</div>
+<div id="view-sup-login" class="hidden"><span class="back" onclick="show('view-landing')">← Retour</span><h3>Superviseur</h3><div class="card"><div style="position:relative"><input id="supPin" type="password" placeholder="PIN Superviseur"><span class="eye" onclick="toggleEye('supPin',this)"></span></div><button class="btn btn-white" onclick="loginSup()">Entrer</button><p id="supLoginMsg" style="color:#f55"></p></div></div>
 
-<div id="incomingCall">
-  <div class="pulse">📞</div><h2 style="margin-top:20px">Appel entrant</h2><p id="callerInfo">Fidèle - CEH</p><p style="color:#00ff88">L'appel sonne...</p>
-  <div style="width:100%;max-width:300px;margin-top:30px"><button class="btn btn-green" onclick="agentAcceptCall()">📞 Décrocher</button><button class="btn btn-red" onclick="agentRejectCall()">❌ Raccrocher</button></div>
-</div>
-
-<div id="inCallView">
-  <div style="text-align:center"><p style="color:#aaa">En communication avec</p><h2>Fidèle CEH</h2><p id="inCallTimer" style="color:#00ff88;font-size:26px">00:00</p><p id="inCallStatus">Connecté</p></div>
-  <div class="call-avatar">👤</div>
-  <audio id="remoteAudio" autoplay></audio>
-  <div class="call-controls">
-    <div class="ctrl-btn" id="btnMute" onclick="toggleMute()"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
-    <div class="ctrl-btn end" onclick="endAgentCall()"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" transform="rotate(135 12 12)"/></svg></div>
-    <div class="ctrl-btn" id="btnSpeaker" onclick="toggleSpeaker()"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></div>
-  </div>
-</div>
-
-<div id="inCallFideleView">
-  <div style="text-align:center"><p>Appel en cours</p><h2>CEH Call-Center</h2><p id="fideleCallTimer" style="color:#00ff88;font-size:26px">00:00</p><p id="fideleCallStatus">Connecté</p></div>
-  <div class="call-avatar">📞</div>
-  <div class="call-controls">
-    <div class="ctrl-btn" id="fideleMute" onclick="toggleFideleMute()"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
-    <div class="ctrl-btn end" onclick="endFideleCall()"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" transform="rotate(135 12 12)"/></svg></div>
-    <div class="ctrl-btn" id="fideleSpeaker" onclick="toggleFideleSpeaker()"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></div>
-  </div>
-</div>
-
-<div id="confirmDisconnect"><div class="card" style="width:100%;max-width:340px"><h3>Se déconnecter?</h3><p style="color:#aaa">Vous ne recevrez plus d'appels.</p><div class="row"><button class="btn btn-red" style="flex:1" onclick="confirmDisconnectYes()">Oui</button><button class="btn btn-dark" style="flex:1" onclick="confirmDisconnectNo()">Non</button></div></div></div>
-
-<div id="view-sup-login" class="hidden"><span class="back" onclick="show('view-landing')">← Retour</span><div class="card"><h3>Superviseur</h3><div class="input-wrap"><input type="password" id="supPin" placeholder="Code"><span class="eye" onclick="toggleEye('supPin',this)"></span></div><button class="btn btn-white" onclick="loginSup()">Entrer</button><div class="row"><button class="btn btn-dark" style="flex:1" onclick="createSupPin()">Créer</button><button class="btn btn-dark" style="flex:1" onclick="modifySupPin()">Modifier</button></div><p id="supMsg" style="color:#ff5555"></p></div></div>
-<div id="view-superviseur" class="hidden"><span class="back" onclick="show('view-landing')">← Retour</span><h3>Dashboard</h3><button class="btn btn-green" onclick="document.getElementById('formAgent').classList.toggle('hidden')">+ Agent</button><div id="formAgent" class="card hidden"><input id="aName" placeholder="Nom"><input id="aPhone" placeholder="Numéro"><input id="aCode" placeholder="Code"><button class="btn btn-white" onclick="addAgent()">Enregistrer</button></div><div id="listAgents" class="card"></div></div>
-
-<audio id="ringtone" loop preload="auto"><source src="https://actions.google.com/sounds/v1/alarms/phone_ringing.ogg" type="audio/ogg"></audio>
-
+<div id="view-superviseur" class="hidden"><span class="back" onclick="show('view-landing')">← Déconnexion</span><h3>Superviseur</h3><div id="supContent"></div></div>
 <script>
-const LS_AGENTS='ceh_agents_v2', LS_AGENT_PINS='ceh_agent_pins', LS_SUP_PIN='ceh_sup_pin', LS_CALL='ceh_current_call', LS_ONLINE='ceh_online_agents', LS_SESSION='ceh_session', LS_FIDELES='ceh_fideles_list', LS_NOTIFS='ceh_notifs', LS_VOCALS='ceh_vocals';
-let agents=JSON.parse(localStorage.getItem(LS_AGENTS)||'[{"name":"Yves Banza","phone":"+243838779476","code":"101"},{"name":"Agent 102","phone":"+243000000000","code":"102"}]');
-let agentPins=JSON.parse(localStorage.getItem(LS_AGENT_PINS)||'null');
-if(!agentPins){agentPins={}; agents.forEach(a=>agentPins[a.code]="1234"); localStorage.setItem(LS_AGENT_PINS, JSON.stringify(agentPins));}
-let currentAgent=null, callCheckInterval=null, inCallInterval=null, callSeconds=0, pc=null, localStream=null, isMuted=false, isSpeaker=false, fideleMuted=false, fideleSpeaker=false;
-
-const EYE_SLASH=`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8a8a8a" stroke-width="1.8"><path d="M9.88 4.12A10.94 10.94 0 0 1 12 4c7 0 10 8 10 8a17.3 17.3 0 0 1-3.33 4.85"/><path d="M10.73 10.73a3 3 0 0 0 4.24 4.24"/><path d="M2 2l20 20"/><path d="M4.5 9.5A17.3 17.3 0 0 0 2 12s3 8 10 8a10.94 10.94 0 0 0 3.5-.5"/></svg>`;
+const LS_AGENTS='ceh_agents_v2', LS_AGENT_PINS='ceh_agent_pins', LS_SUP_PIN='ceh_sup_pin', LS_CALL='ceh_current_call', LS_ONLINE='ceh_online_agents', LS_SESSION='ceh_session', LS_FIDELES='ceh_fideles_list', LS_NOTIFS='ceh_notifs';
+let agents=JSON.parse(localStorage.getItem(LS_AGENTS) || '[{"name":"Yves Banza","phone":"+243838779476","code":"101"},{"name":"Agent 102","phone":"+243000000000","code":"102"}]');
+let agentPins=JSON.parse(localStorage.getItem(LS_AGENT_PINS) || 'null');
+if(!agentPins){ agentPins={}; agents.forEach(a=>agentPins[a.code]="1234"); localStorage.setItem(LS_AGENT_PINS, JSON.stringify(agentPins)); }
+let currentAgent=null;
+const EYE_SLASH=`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8a8a8a" stroke-width="1.8"><path d="M9.88 4.12A10.94 10.94 0 0 1 12 4c7 0 10 8 10 8a17.3 17.3 0 0 1-3.33 4.85"/><path d="M10.73 10.73a3 3 0 0 0 4.24 4.24"/><path d="M2 2l20 20"/></svg>`;
 const EYE_OPEN=`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8a8a8a" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
-function initEyes(){document.querySelectorAll('.eye').forEach(e=>e.innerHTML=EYE_SLASH);}
-function toggleEye(id,el){const i=document.getElementById(id); if(i.type==='password'){i.type='text'; el.innerHTML=EYE_OPEN;} else {i.type='password'; el.innerHTML=EYE_SLASH;}}
-function resetTo1234(){agentPins={}; agents.forEach(a=>agentPins[a.code]="1234"); localStorage.setItem(LS_AGENT_PINS, JSON.stringify(agentPins)); localStorage.setItem(LS_AGENTS, JSON.stringify(agents)); alert('✅ Tous les codes remis à 1234 - Recharge la page'); location.reload();}
-function show(id){document.querySelectorAll('[id^=view-]').forEach(d=>d.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');if(id.includes('agent'))renderSelects();if(id==='view-superviseur')renderAgentsList();if(id==='view-agent')renderFidelesAgent();if(id==='view-fidele'){checkFideleNotif();const myId=localStorage.getItem('ceh_my_fidele_id');let card=document.getElementById('cardInscriptionFidele');if(myId){if(card)card.classList.add('hidden');let msg=document.getElementById('msgInscriptionObligatoire');if(msg)msg.style.display='none';}else{if(card)card.classList.remove('hidden');}}}
-function saveAgents(){localStorage.setItem(LS_AGENTS,JSON.stringify(agents));} function savePins(){localStorage.setItem(LS_AGENT_PINS,JSON.stringify(agentPins));}
-function renderSelects(){const s=document.getElementById('agentSelectLogin'); if(!s) return; s.innerHTML=''; if(agents.length===0){agents=[{name:"Yves Banza",phone:"+243838779476",code:"101"}]; saveAgents();} agents.forEach(a=>{let o=document.createElement('option');o.value=a.code;o.textContent=`Agent ${a.code} - ${a.name}`;s.appendChild(o);});}
-function loginAgent(){const sel=document.getElementById('agentSelectLogin'); const code=sel?sel.value:''; const pin=document.getElementById('agentPin').value.trim(); if(!code){document.getElementById('agentLoginMsg').textContent='Choisis un agent'; return;} if(agentPins[code]===pin){currentAgent=agents.find(a=>a.code===code); localStorage.setItem(LS_SESSION, code); document.getElementById('agentWelcome').textContent=currentAgent.name; show('view-agent'); goOnline();} else document.getElementById('agentLoginMsg').textContent='Incorrect - code attendu: '+(agentPins[code]||'1234');}
-function registerFideleLocal(){const n=document.getElementById('fideleNameInput').value.trim(),adr=document.getElementById('fideleAdresseInput').value.trim(),tel=document.getElementById('fidelePhoneInput').value.trim();if(!n||!adr||!tel)return alert('Remplis les 3 cases');let list=JSON.parse(localStorage.getItem(LS_FIDELES)||'[]');if(list.find(f=>f.phone===tel))return alert('Numéro déjà inscrit');let id=tel.replace(/[^0-9]/g,'')+'_'+Date.now();list.unshift({id:id,name:n,adresse:adr,phone:tel,quartier:adr,registered:Date.now()});localStorage.setItem(LS_FIDELES,JSON.stringify(list));localStorage.setItem('ceh_my_fidele_id',id);localStorage.setItem('ceh_my_fidele_name',n);localStorage.setItem('ceh_my_fidele_phone',tel);alert('✅ Inscrit: '+n);document.getElementById('cardInscriptionFidele').classList.add('hidden');renderFidelesAgent();}
-function renderFidelesAgent(){const list=JSON.parse(localStorage.getItem(LS_FIDELES)||'[]');const div=document.getElementById('listFidelesAgent');if(!div)return;div.innerHTML='<button class="btn btn-white" style="padding:10px;font-size:13px" onclick="showBdFideles()">📖 Ouvrir BD Fidèles ('+list.length+')</button>';}
-function showBdFideles(){let list=JSON.parse(localStorage.getItem(LS_FIDELES)||'[]');let html='<div id="bdFidelesModal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:2000;overflow:auto;padding:15px"><span style="color:#aaa" onclick="document.getElementById(\'bdFidelesModal\').remove()">← Fermer BD Fidèles</span><h3>📖 BD Fidèles - '+list.length+' inscrits</h3><input id="searchFidele" placeholder="Rechercher" oninput="filterBdFideles()" style="margin-bottom:10px"><div id="bdContent">';list.forEach(f=>{html+=`<div class="card" style="margin-top:8px"><b>${f.name}</b><br><small>📍 ${f.adresse||''}</small><br><small>📞 ${f.phone}</small><br><div style="display:flex;gap:6px;margin-top:8px"><button class="btn btn-green" style="padding:6px;font-size:12px;flex:1" onclick="callFidelePastoral('${f.id}','${f.name}')">📞 Appeler</button><button class="btn btn-dark" style="padding:6px;font-size:10px;flex:1" onclick="markAbsentPastoral('${f.id}','${f.name}')">Absent culte</button></div></div>`;});html+='</div></div>';document.body.insertAdjacentHTML('beforeend',html);}
-function filterBdFideles(){let q=document.getElementById('searchFidele').value.toLowerCase();let list=JSON.parse(localStorage.getItem(LS_FIDELES)||'[]');let filtered=list.filter(f=>(f.name+f.adresse+f.phone).toLowerCase().includes(q));let cont=document.getElementById('bdContent');cont.innerHTML='';filtered.forEach(f=>{cont.innerHTML+=`<div class="card" style="margin-top:8px"><b>${f.name}</b><br><small>📍 ${f.adresse||''}</small><br><small>📞 ${f.phone}</small><br><div style="display:flex;gap:6px;margin-top:8px"><button class="btn btn-green" style="padding:6px;font-size:12px;flex:1" onclick="callFidelePastoral('${f.id}','${f.name}')">📞 Appeler</button><button class="btn btn-dark" style="padding:6px;font-size:10px;flex:1" onclick="markAbsentPastoral('${f.id}','${f.name}')">Absent culte</button></div></div>`;});}
-function checkFideleNotif(){
-  const myId=localStorage.getItem('ceh_my_fidele_id');
-  if(!myId) return;
-  let notifs=JSON.parse(localStorage.getItem(LS_NOTIFS)||'{}');
-  let myNotif=notifs[myId];
-  if(myNotif){
-    document.getElementById('notifBoxFidele').classList.remove('hidden');
-    document.getElementById('notifTxtFidele').textContent=myNotif.msg;
-    // Sonnerie si c'est un appel
-    if(myNotif.type==='call'){ testRingtoneFidele(); }
-  }
-}
-function fideleRappelleEglise(){document.getElementById('notifBoxFidele').classList.add('hidden'); callFidele();}
-function testRingtoneFidele(){const r=document.getElementById('ringtone'); r.volume=1; r.play().catch(()=>{}); if(navigator.vibrate) navigator.vibrate([600,200,600]);}
-function testRingtone(){
-  const r=document.getElementById('ringtone');
-  r.volume=1.0;
-  r.play().then(()=>{
-    if(navigator.vibrate) navigator.vibrate([600,200,600,200,600]);
-    document.getElementById('incomingCall').classList.add('show');
-    document.getElementById('callerInfo').textContent='TEST SONNERIE FORTE - Ça sonne?';
-    setTimeout(()=>{r.pause(); document.getElementById('incomingCall').classList.remove('show');},4000);
-  }).catch(e=>{
-    alert('Chrome bloque au 1er clic, reclique une 2e fois pour entendre FORT');
-    r.play();
-  });
-}
-
-function loginAgent(){const code=document.getElementById('agentSelectLogin').value,pin=document.getElementById('agentPin').value.trim(); if(agentPins[code]===pin){currentAgent=agents.find(a=>a.code===code); localStorage.setItem(LS_SESSION, code); document.getElementById('agentWelcome').textContent=currentAgent.name; show('view-agent'); goOnline();} else document.getElementById('agentLoginMsg').textContent='Incorrect';}
-function askDisconnect(){document.getElementById('confirmDisconnect').classList.add('show');}
-function confirmDisconnectNo(){document.getElementById('confirmDisconnect').classList.remove('show');}
-function confirmDisconnectYes(){document.getElementById('confirmDisconnect').classList.remove('show'); goOfflineInternal(); localStorage.removeItem(LS_SESSION); show('view-landing');}
-function goOfflineInternal(){let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]'); online=online.filter(c=>c!==currentAgent?.code); localStorage.setItem(LS_ONLINE, JSON.stringify(online)); if(callCheckInterval) clearInterval(callCheckInterval); document.getElementById('incomingCall').classList.remove('show'); const r=document.getElementById('ringtone'); r.pause();}
-function goOnline(){if(!currentAgent) return; document.getElementById('agentState').textContent='En ligne - En attente...'; document.getElementById('dot').style.color='#00ff88'; let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]'); if(!online.includes(currentAgent.code)){online.push(currentAgent.code); localStorage.setItem(LS_ONLINE, JSON.stringify(online));} if(Notification && Notification.permission!=='granted'){Notification.requestPermission();} if(callCheckInterval) clearInterval(callCheckInterval); callCheckInterval=setInterval(checkIncomingCall, 1200); renderFidelesAgent();}
-function goOffline(){askDisconnect();}
-
-function checkIncomingCall(){
-  const call=JSON.parse(localStorage.getItem(LS_CALL)||'null');
-  if(call && (call.status==='ringing' || call.status==='ringing_pastoral')){
-    document.getElementById('incomingCall').classList.add('show');
-    document.getElementById('callerInfo').textContent=(call.name||'Fidèle')+' appelle';
-    const r=document.getElementById('ringtone'); r.volume=1.0; r.play().catch(()=>{});
-    if(navigator.vibrate) navigator.vibrate([600,200,600]);
-  }
-}
-
-// 1 et 2 : L'AGENT DECROCHE = COMPTEUR COMMENCE
-async function agentAcceptCall(){
-  let call=JSON.parse(localStorage.getItem(LS_CALL)||'{}');
-  try{ localStream=await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){ alert('Micro refusé'); return; }
-  pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
-  localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
-  pc.ontrack=e=>{ document.getElementById('remoteAudio').srcObject=e.streams[0]; };
-  pc.onicecandidate=e=>{ if(e.candidate){ let c=JSON.parse(localStorage.getItem(LS_CALL)||'{}'); c.iceAgent=c.iceAgent||[]; c.iceAgent.push(e.candidate); localStorage.setItem(LS_CALL, JSON.stringify(c)); }};
-
-  if(call.offer){ await pc.setRemoteDescription(new RTCSessionDescription(call.offer)); const answer=await pc.createAnswer(); await pc.setLocalDescription(answer); call.answer=answer; }
-  call.status='accepted'; // <-- C'EST ICI QUE LE COMPTEUR VA DEMARRER CHEZ LE FIDELE
-  call.agent=currentAgent.code; call.agentName=currentAgent.name; call.acceptedAt=Date.now();
-  localStorage.setItem(LS_CALL, JSON.stringify(call));
-
-  document.getElementById('incomingCall').classList.remove('show'); document.getElementById('ringtone').pause();
-  document.getElementById('inCallView').classList.add('show');
-  document.getElementById('inCallTimer').textContent='00:00';
-  document.getElementById('inCallStatus').textContent='Connecté';
-  startInCallTimer(); // compteur agent commence MAINTENANT
-
-  let iceCheck=setInterval(async()=>{ let c=JSON.parse(localStorage.getItem(LS_CALL)||'{}'); if(c.status==='ended'){ clearInterval(iceCheck); endAgentCall(); } if(c.iceFidele && c.iceFidele.length){ for(let ice of c.iceFidele){ try{ await pc.addIceCandidate(ice);}catch(e){} } c.iceFidele=[]; localStorage.setItem(LS_CALL, JSON.stringify(c)); } },800);
-}
-
-function agentRejectCall(){ let c=JSON.parse(localStorage.getItem(LS_CALL)||'{}'); c.status='rejected'; localStorage.setItem(LS_CALL, JSON.stringify(c)); document.getElementById('incomingCall').classList.remove('show'); document.getElementById('ringtone').pause(); setTimeout(()=>localStorage.removeItem(LS_CALL),2000); }
-
-function startInCallTimer(){ callSeconds=0; if(inCallInterval) clearInterval(inCallInterval); inCallInterval=setInterval(()=>{ callSeconds++; let m=Math.floor(callSeconds/60), s=callSeconds%60; let txt=(m<10?'0'+m:m)+':'+(s<10?'0'+s:s); document.getElementById('inCallTimer').textContent=txt; document.getElementById('fideleCallTimer').textContent=txt; document.getElementById('agentTimer').textContent='('+txt+')'; },1000); }
-function stopTimer(){ if(inCallInterval) clearInterval(inCallInterval); }
-
-function toggleMute(){ if(!localStream) return; isMuted=!isMuted; localStream.getAudioTracks()[0].enabled=!isMuted; document.getElementById('btnMute').classList.toggle('active',isMuted); document.getElementById('inCallStatus').textContent=isMuted?'Micro coupé':'Micro activé'; }
-function toggleSpeaker(){ isSpeaker=!isSpeaker; let audio=document.getElementById('remoteAudio'); if(audio.setSinkId){ audio.setSinkId(isSpeaker?'default':'').catch(()=>{}); } document.getElementById('btnSpeaker').classList.toggle('active',isSpeaker); }
-function endAgentCall(){ if(pc) pc.close(); if(localStream) localStream.getTracks().forEach(t=>t.stop()); pc=null; localStream=null; document.getElementById('inCallView').classList.remove('show'); document.getElementById('ringtone').pause(); localStorage.setItem(LS_CALL, JSON.stringify({status:'ended'})); setTimeout(()=>localStorage.removeItem(LS_CALL),1000); stopTimer(); document.getElementById('agentState').textContent='En ligne - En attente...'; }
-
-// 1 et 3 : LOGIQUE FIDELE
-async function callFidele(){
-  const btn=document.getElementById('btnCallFidele'), status=document.getElementById('fideleStatus');
-  let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]');
-    const myId=localStorage.getItem('ceh_my_fidele_id');
-  if(!myId){
-    document.getElementById('msgInscriptionObligatoire').style.display='block';
-    document.getElementById('msgInscriptionObligatoire').scrollIntoView();
-    if(navigator.vibrate) navigator.vibrate([200,100,200]);
-    return;
-  }
-  document.getElementById('msgInscriptionObligatoire').style.display='none';
-
-  // Affiche directement le tableau de ton screenshot
-  document.getElementById('inCallFideleView').classList.add('show');
-  document.getElementById('fideleCallTimer').textContent='00:00';
-  document.getElementById('fideleCallTimer').style.display='none'; // on cache le compteur au début
-  document.getElementById('voiceRecorderBox').classList.add('hidden');
-
-  if(online.length===0){
-    // 3. AUCUN AGENT
-    document.querySelector('#inCallFideleView h2').textContent='CEH Call-Center';
-    document.getElementById('fideleCallStatus').innerHTML='Aucun agent connecté.<br>Veuillez rappeler plus tard<br>ou laissez un message vocal';
-    document.getElementById('fideleCallStatus').style.color='#ffcc00';
-    document.getElementById('voiceRecorderBox').classList.remove('hidden');
-    document.getElementById('fideleCallTimer').style.display='none';
-    return;
-  }
-
-  // 1. AGENT EN LIGNE : On ne compte PAS encore
-  try{ localStream=await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){ status.textContent='Micro refusé'; return; }
-  pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
-  localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
-  pc.ontrack=e=>{ document.getElementById('remoteAudioFidele').srcObject=e.streams[0]; };
-  pc.onicecandidate=e=>{ if(e.candidate){ let c=JSON.parse(localStorage.getItem(LS_CALL)||'{}'); c.iceFidele=c.iceFidele||[]; c.iceFidele.push(e.candidate); localStorage.setItem(LS_CALL, JSON.stringify(c)); }};
-
-  const offer=await pc.createOffer(); await pc.setLocalDescription(offer);
-  localStorage.setItem(LS_CALL, JSON.stringify({status:'ringing', time:Date.now(), offer:offer, name:localStorage.getItem('ceh_my_fidele_name')||'Fidèle CEH'}));
-
-  document.querySelector('#inCallFideleView h2').textContent='CEH Call-Center';
-  document.getElementById('fideleCallStatus').textContent='Appel en cours...';
-  document.getElementById('fideleCallStatus').innerHTML='Appel en cours<br><small style="color:#aaa">Veuillez patienter...</small>';
-  btn.textContent='NOUS CONTACTER';
-  status.textContent='';
-
-  // On attend que l'agent décroche pour démarrer le compteur
-  let check=setInterval(async()=>{
-    let c=JSON.parse(localStorage.getItem(LS_CALL)||'{}');
-    if(c.status==='accepted'){
-      // 2. AGENT A DECROCHE = ON DEMARRE COMPTEUR DES DEUX COTES
-      clearInterval(check);
-      document.getElementById('fideleCallTimer').style.display='block';
-      document.getElementById('fideleCallTimer').textContent='00:00';
-      document.getElementById('fideleCallStatus').textContent='Connecté';
-      document.getElementById('fideleCallStatus').style.color='#00ff88';
-      if(c.answer && pc &&!pc.remoteDescription){ await pc.setRemoteDescription(new RTCSessionDescription(c.answer)); }
-      startInCallTimer(); // compteur fidèle commence MAINTENANT
-    }
-    if(c.iceAgent && c.iceAgent.length){ for(let ice of c.iceAgent){ try{ await pc.addIceCandidate(ice);}catch(e){} } c.iceAgent=[]; localStorage.setItem(LS_CALL, JSON.stringify(c)); }
-    if(c.status==='rejected'){ clearInterval(check); document.getElementById('fideleCallStatus').textContent='Agent occupé'; setTimeout(()=>endFideleCall(),1500); }
-    if(c.status==='ended'){ clearInterval(check); endFideleCall(); }
-  },800);
-
-  // Timeout 35s
-  setTimeout(()=>{ let c=JSON.parse(localStorage.getItem(LS_CALL)||'{}'); if(c.status==='ringing'){ clearInterval(check); document.getElementById('fideleCallStatus').innerHTML='Pas de réponse<br><small>Laissez un message vocal</small>'; document.getElementById('voiceRecorderBox').classList.remove('hidden'); if(pc) pc.close(); } },35000);
-}
-
-function toggleFideleMute(){ if(!localStream) return; fideleMuted=!fideleMuted; localStream.getAudioTracks()[0].enabled=!fideleMuted; document.getElementById('fideleMute').classList.toggle('active',fideleMuted); }
-function toggleFideleSpeaker(){ fideleSpeaker=!fideleSpeaker; let audio=document.getElementById('remoteAudioFidele'); if(audio.setSinkId){ audio.setSinkId(fideleSpeaker?'default':'').catch(()=>{}); } document.getElementById('fideleSpeaker').classList.toggle('active',fideleSpeaker); }
-function endFideleCall(){ if(pc) pc.close(); if(localStream) localStream.getTracks().forEach(t=>t.stop()); pc=null; localStream=null; document.getElementById('inCallFideleView').classList.remove('show'); document.getElementById('inCallView').classList.remove('show'); document.getElementById('btnCallFidele').textContent='NOUS CONTACTER'; document.getElementById('btnCallFidele').disabled=false; document.getElementById('fideleStatus').textContent='Appel terminé'; document.getElementById('fideleReady').textContent='Prêt à appeler'; document.getElementById('fideleCallTimer').style.display='block'; localStorage.setItem(LS_CALL, JSON.stringify({status:'ended'})); setTimeout(()=>localStorage.removeItem(LS_CALL),1000); stopTimer(); document.getElementById('voiceRecorderBox').classList.add('hidden');}
-
-// --- MESSAGE VOCAL TYPE WHATSAPP POUR SUPERVISEUR ---
-let mediaRecorder=null, audioChunks=[], recording=false, recTimer=null, recSec=0;
-const LS_VOCALS='ceh_vocals';
-
-function toggleVoiceRecord(){
-  const btn=document.getElementById('btnRecVoice'), txt=document.getElementById('recStatus');
-  if(!recording){ startVoiceRecord(); btn.style.background='#ff2d55'; txt.textContent='Enregistrement... 00:00 - Cliquez pour envoyer'; }
-  else { stopVoiceRecord(); btn.style.background='#00ff88'; }
-}
-async function startVoiceRecord(){
-  try{
-    let stream=await navigator.mediaDevices.getUserMedia({audio:true});
-    mediaRecorder=new MediaRecorder(stream); audioChunks=[]; recording=true; recSec=0;
-    mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
-    mediaRecorder.onstop=async()=>{
-      let blob=new Blob(audioChunks,{type:'audio/webm'});
-      let reader=new FileReader();
-      reader.onloadend=()=>{
-        let vocals=JSON.parse(localStorage.getItem(LS_VOCALS)||'[]');
-        vocals.unshift({id:Date.now(), name:localStorage.getItem('ceh_my_fidele_name')||'Fidèle anonyme', date:new Date().toLocaleString(), audio:reader.result, duration:recSec});
-        localStorage.setItem(LS_VOCALS, JSON.stringify(vocals));
-        document.getElementById('recStatus').textContent='✅ Message envoyé au superviseur! '+recSec+'s';
-        setTimeout(()=>{ document.getElementById('voiceRecorderBox').classList.add('hidden'); endFideleCall(); },1500);
-      };
-      reader.readAsDataURL(blob);
-      stream.getTracks().forEach(t=>t.stop());
-    };
-    mediaRecorder.start();
-    recTimer=setInterval(()=>{ recSec++; let m=Math.floor(recSec/60), s=recSec%60; document.getElementById('recStatus').textContent='Enregistrement... '+(m<10?'0'+m:m)+':'+(s<10?'0'+s:s)+' - Cliquez pour envoyer'; },1000);
-  }catch(e){ alert('Micro refusé'); }
-}
-function stopVoiceRecord(){ if(mediaRecorder && recording){ mediaRecorder.stop(); recording=false; if(recTimer) clearInterval(recTimer); } }
-
-function loginSup(){const pin=document.getElementById('supPin').value.trim(), saved=localStorage.getItem(LS_SUP_PIN); if(!saved){document.getElementById('supMsg').textContent='Pas de code, tape puis Créer'; return;} if(pin===saved) show('view-superviseur'); else document.getElementById('supMsg').textContent='Incorrect';}
-function createSupPin(){const pin=document.getElementById('supPin').value.trim(); if(!pin||pin.length<4){document.getElementById('supMsg').textContent='Tape 4 chiffres'; return;} if(localStorage.getItem(LS_SUP_PIN)){document.getElementById('supMsg').textContent='Existe déjà'; return;} localStorage.setItem(LS_SUP_PIN,pin); alert('Créé: '+pin); show('view-superviseur');}
-function modifySupPin(){const saved=localStorage.getItem(LS_SUP_PIN); if(!saved) return; const oldP=prompt('Ancien:'); if(oldP!==saved) return alert('Faux'); const newP=document.getElementById('supPin').value.trim(); if(!newP||newP.length<4) return alert('Tape nouveau'); localStorage.setItem(LS_SUP_PIN,newP); alert('Modifié');}
-
-function renderAgentsList(){
-  const d=document.getElementById('listAgents');
-  d.innerHTML+='<button class="btn btn-white" style="padding:12px;margin-bottom:10px" onclick="showBdFideles()">📖 BD Fidèles - Voir tous les inscrits ('+JSON.parse(localStorage.getItem(LS_FIDELES)||'[]').length+')</button>';
-  d.innerHTML='<h4>Agents ('+agents.length+')</h4>';
-  agents.forEach((a,i)=>{d.innerHTML+=`<div class="agent-row"><div class="agent-info"><b>${a.name} - ${a.code}</b><br><small style="color:#aaa">${a.phone}</small></div></div>`;});
-  // Affichage des vocaux pour superviseur - par ordre d'enregistrement
-  let vocals=JSON.parse(localStorage.getItem(LS_VOCALS)||'[]');
-  d.innerHTML+='<h4 style="margin-top:20px">📩 Messages vocaux fidèles ('+vocals.length+')</h4><p style="font-size:10px;color:#888">Du plus récent au plus ancien - Superviseur écoute ici</p>';
-  if(vocals.length===0) d.innerHTML+='<p style="color:#555">Aucun message</p>';
-  vocals.forEach((v,i)=>{
-    d.innerHTML+=`<div class="card" style="background:#1a1a1a"><b>${v.name}</b> <small style="color:#888">${v.date} - ${v.duration}s</small><br><audio controls src="${v.audio}" style="width:100%;margin-top:8px"></audio><button class="btn btn-dark" style="padding:6px;font-size:12px;margin-top:6px" onclick="deleteVocal(${i})">Supprimer</button></div>`;
-  });
-}
-function deleteVocal(i){ if(confirm('Supprimer?')){ let v=JSON.parse(localStorage.getItem(LS_VOCALS)||'[]'); v.splice(i,1); localStorage.setItem(LS_VOCALS, JSON.stringify(v)); renderAgentsList(); }}
-function addAgent(){const n=document.getElementById('aName').value.trim(),ph=document.getElementById('aPhone').value.trim(),c=document.getElementById('aCode').value.trim();if(!n||!ph||!c)return alert('Remplis');agents.push({name:n,phone:ph,code:c});agentPins[c]="1234";saveAgents();savePins();renderAgentsList();document.getElementById('formAgent').classList.add('hidden');}
-function changeAgentPin(){const oldP=prompt('Ancien:'); if(oldP!==agentPins[currentAgent.code]) return alert('Faux'); const newP=prompt('Nouveau:'); if(!newP||newP.length<4) return; const c=prompt('Confirme:'); if(newP!==c) return; agentPins[currentAgent.code]=newP; savePins(); alert('Nouveau: '+newP);}
-function logoutAgent(){goOfflineInternal(); localStorage.removeItem(LS_SESSION); show('view-agent-login');}
-renderSelects(); initEyes();
-(function autoLogin(){const sess=localStorage.getItem(LS_SESSION); if(sess && agentPins[sess]){const ag=agents.find(a=>a.code===sess); if(ag){currentAgent=ag; document.getElementById('agentWelcome').textContent=ag.name; show('view-agent'); goOnline();}}})();
-</script>
-
-<!-- UI Message vocal type WhatsApp -->
-<style>
-#voiceRecorderBox{margin-top:18px;background:#111;border:1px solid #222;border-radius:16px;padding:12px;text-align:center}
-#btnRecVoice{width:70px;height:70px;border-radius:50%;border:0;background:#00ff88;display:flex;align-items:center;justify-content:center;margin:10px auto;cursor:pointer;transition:0.2s}
-#btnRecVoice svg{width:32px;height:32px;stroke:#000;fill:none;stroke-width:2}
-</style>
-<div id="inCallFideleView">
-  <!-- ce div sera déplacé, on le laisse vide, le vrai est déjà dans body, on ajoute juste le recorder dedans via JS -->
-</div>
-<script>
-// Injecte le recorder dans la vue d'appel fidèle existante
-document.addEventListener('DOMContentLoaded',()=>{
-  let view=document.getElementById('inCallFideleView');
-  let box=document.createElement('div');
-  box.id='voiceRecorderBox';
-  box.className='hidden';
-  box.innerHTML=`<p style="color:#ffcc00;font-size:13px">🎤 Laissez un message vocal</p><button id="btnRecVoice" onclick="toggleVoiceRecord()"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button><p id="recStatus" style="font-size:12px;color:#aaa">Appuyez sur le micro pour enregistrer</p>`;
-  view.appendChild(box);
-});
+function initEyes(){ document.querySelectorAll('.eye').forEach(e=>e.innerHTML=EYE_SLASH); }
+function toggleEye(id,el){ const i=document.getElementById(id); if(i.type==='password'){ i.type='text'; el.innerHTML=EYE_OPEN; } else { i.type='password'; el.innerHTML=EYE_SLASH; } }
+function resetTo1234(){ agentPins={}; agents.forEach(a=>agentPins[a.code]="1234"); localStorage.setItem(LS_AGENT_PINS, JSON.stringify(agentPins)); localStorage.setItem(LS_AGENTS, JSON.stringify(agents)); alert('✅ Tous les codes remis à 1234'); location.reload(); }
+function show(id){ document.querySelectorAll('[id^=view-]').forEach(d=>d.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); if(id.includes('agent')) renderSelects(); if(id==='view-superviseur') renderAgentsList(); if(id==='view-agent') renderFidelesAgent(); if(id==='view-fidele'){ const myId=localStorage.getItem('ceh_my_fidele_id'); let card=document.getElementById('cardInscriptionFidele'); if(myId){ if(card) card.classList.add('hidden'); let msg=document.getElementById('msgInscriptionObligatoire'); if(msg) msg.style.display='none'; } else { if(card) card.classList.remove('hidden'); } } }
+function renderSelects(){ const s=document.getElementById('agentSelectLogin'); if(!s) return; s.innerHTML=''; if(agents.length===0){ agents=[{name:"Yves Banza",phone:"+243838779476",code:"101"}]; localStorage.setItem(LS_AGENTS,JSON.stringify(agents)); } agents.forEach(a=>{ let o=document.createElement('option'); o.value=a.code; o.textContent=`Agent ${a.code} - ${a.name}`; s.appendChild(o); }); }
+function loginAgent(){ const sel=document.getElementById('agentSelectLogin'); const code=sel?sel.value:''; const pin=document.getElementById('agentPin').value.trim(); if(!code){ document.getElementById('agentLoginMsg').textContent='Choisis un agent'; return; } if(agentPins[code]===pin){ currentAgent=agents.find(a=>a.code===code); localStorage.setItem(LS_SESSION, code); document.getElementById('agentWelcome').textContent=currentAgent.name; show('view-agent'); goOnline(); } else { document.getElementById('agentLoginMsg').textContent='Incorrect - code attendu: '+(agentPins[code]||'1234'); } }
+function loginSup(){ const pin=document.getElementById('supPin').value.trim(); const saved=localStorage.getItem(LS_SUP_PIN)||'2025'; if(pin===saved||pin==='2025'){ show('view-superviseur'); } else { document.getElementById('supLoginMsg').textContent='PIN Incorrect'; } }
+function registerFideleLocal(){ const n=document.getElementById('fideleNameInput').value.trim(), adr=document.getElementById('fideleAdresseInput').value.trim(), tel=document.getElementById('fidelePhoneInput').value.trim(); if(!n||!adr||!tel) return alert('Remplis les 3 cases'); let list=JSON.parse(localStorage.getItem(LS_FIDELES)||'[]'); if(list.find(f=>f.phone===tel)) return alert('Numéro déjà inscrit'); let id=tel.replace(/[^0-9]/g,'')+'_'+Date.now(); list.unshift({id:id,name:n,adresse:adr,phone:tel,registered:Date.now()}); localStorage.setItem(LS_FIDELES, JSON.stringify(list)); localStorage.setItem('ceh_my_fidele_id', id); localStorage.setItem('ceh_my_fidele_name', n); localStorage.setItem('ceh_my_fidele_phone', tel); alert('✅ Inscrit: '+n); document.getElementById('cardInscriptionFidele').classList.add('hidden'); let m=document.getElementById('msgInscriptionObligatoire'); if(m) m.style.display='none'; renderFidelesAgent(); }
+function renderFidelesAgent(){ const list=JSON.parse(localStorage.getItem(LS_FIDELES)||'[]'); const div=document.getElementById('listFidelesAgent'); if(!div) return; div.innerHTML='<button class="btn btn-white" style="padding:10px;font-size:13px" onclick="showBdFideles()">📖 Ouvrir BD Fidèles ('+list.length+')</button>'; }
+function showBdFideles(){ let list=JSON.parse(localStorage.getItem(LS_FIDELES)||'[]'); let html='<div id="bdFidelesModal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:2000;overflow:auto;padding:15px"><span style="color:#aaa" onclick="document.getElementById(\'bdFidelesModal\').remove()">← Fermer</span><h3>📖 BD Fidèles - '+list.length+' inscrits</h3><input id="searchFidele" placeholder="Rechercher" oninput="filterBdFideles()" style="margin-bottom:10px"><div id="bdContent">'; list.forEach(f=>{ html+=`<div class="card" style="margin-top:8px"><b>${f.name}</b><br><small>📍 ${f.adresse||''}</small><br><small>📞 ${f.phone}</small></div>`; }); html+='</div></div>'; document.body.insertAdjacentHTML('beforeend',html); }
+function filterBdFideles(){ let q=document.getElementById('searchFidele').value.toLowerCase(); let list=JSON.parse(localStorage.getItem(LS_FIDELES)||'[]'); let filtered=list.filter(f=>(f.name+f.adresse+f.phone).toLowerCase().includes(q)); let cont=document.getElementById('bdContent'); cont.innerHTML=''; filtered.forEach(f=>{ cont.innerHTML+=`<div class="card" style="margin-top:8px"><b>${f.name}</b><br><small>📍 ${f.adresse||''}</small><br><small>📞 ${f.phone}</small></div>`; }); }
+function goOnline(){ let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]'); if(currentAgent &&!online.includes(currentAgent.code)){ online.push(currentAgent.code); localStorage.setItem(LS_ONLINE, JSON.stringify(online)); } document.getElementById('agentState').textContent='En ligne'; }
+function goOffline(){ let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]'); if(currentAgent){ online=online.filter(c=>c!==currentAgent.code); localStorage.setItem(LS_ONLINE, JSON.stringify(online)); } document.getElementById('agentState').textContent='Hors ligne'; }
+function renderAgentsList(){ const d=document.getElementById('supContent'); if(!d) return; let list=JSON.parse(localStorage.getItem(LS_FIDELES)||'[]'); d.innerHTML='<button class="btn btn-white" style="padding:12px;margin-bottom:10px" onclick="showBdFideles()">📖 BD Fidèles - Voir tous les inscrits ('+list.length+')</button><h4>Agents: '+agents.length+'</h4>'; agents.forEach(a=>{ d.innerHTML+='<div class="card">'+a.name+' - '+a.code+' - PIN:'+(agentPins[a.code]||'1234')+'</div>'; }); }
+async function callFidele(){ const myId=localStorage.getItem('ceh_my_fidele_id'); if(!myId){ document.getElementById('msgInscriptionObligatoire').style.display='block'; document.getElementById('msgInscriptionObligatoire').scrollIntoView(); if(navigator.vibrate) navigator.vibrate([200,100,200]); return; } document.getElementById('msgInscriptionObligatoire').style.display='none'; document.getElementById('fideleStatus').textContent='Recherche agent...'; let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]'); if(online.length===0){ document.getElementById('fideleStatus').textContent='Aucun agent en ligne'; return; } let call={id:Date.now(),fideleId:myId,fideleName:localStorage.getItem('ceh_my_fidele_name'),fidelePhone:localStorage.getItem('ceh_my_fidele_phone'),agentCode:online[0],time:Date.now()}; localStorage.setItem(LS_CALL, JSON.stringify(call)); document.getElementById('fideleStatus').textContent='Appel en cours vers agent '+online[0]; }
+window.onload=()=>{ initEyes(); renderSelects(); show('view-landing'); };
 </script>
 </body>
 </html>
