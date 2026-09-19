@@ -335,6 +335,7 @@ function modifySupPin(){const saved=localStorage.getItem(LS_SUP_PIN); if(!saved)
 
 function renderAgentsList(){
   const d=document.getElementById('listAgents');
+  d.innerHTML+='<button class="btn btn-white" style="padding:12px;margin-bottom:10px" onclick="showBdFideles()">📖 BD Fidèles - Voir tous les inscrits ('+JSON.parse(localStorage.getItem(LS_FIDELES)||'[]').length+')</button>';
   d.innerHTML='<h4>Agents ('+agents.length+')</h4>';
   agents.forEach((a,i)=>{d.innerHTML+=`<div class="agent-row"><div class="agent-info"><b>${a.name} - ${a.code}</b><br><small style="color:#aaa">${a.phone}</small></div></div>`;});
   // Affichage des vocaux pour superviseur - par ordre d'enregistrement
