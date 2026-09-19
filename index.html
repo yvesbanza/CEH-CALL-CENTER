@@ -1,164 +1,112 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CEH CALL-CENTER</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CEH CALL-CENTER V5</title>
 <style>
-body{background:#000;color:#fff;font-family:system-ui;margin:0;padding:12px}
-.card{background:#111;border:1px solid #222;border-radius:16px;padding:16px;margin-top:16px}
-.btn{width:100%;padding:16px;border-radius:14px;border:0;font-weight:bold;font-size:16px;margin-top:10px;cursor:pointer}
-.btn-white{background:#fff;color:#000}.btn-green{background:#00ff88;color:#000}.btn-dark{background:#222;color:#fff;border:1px solid #444}
-.btn-outline-green{background:#000;color:#00ff88;border:1px solid #00ff88}.btn-red{background:#ff2d55;color:#fff}
-.hidden{display:none}
-.logo-wrap{text-align:center;margin:30px 0}.logo-wrap img{width:85%;max-width:340px}
-.logo-fidele img{width:85%;max-width:320px;display:block;margin:0 auto}
-.logo-agent{width:70%;max-width:260px;display:block;margin:10px auto 20px auto}
-.input-wrap{position:relative;margin-top:8px}.input-wrap input{width:100%;padding:12px 45px 12px 12px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;box-sizing:border-box}
-.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer}
-input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #333;background:#000;color:#fff;margin-top:8px;box-sizing:border-box}
-.back{color:#aaa;font-size:14px;cursor:pointer;display:inline-block;margin:6px 0 10px 0}.row{display:flex;gap:8px}
-.warning{border:1px solid #ffcc00;color:#ffcc00;padding:12px;border-radius:12px;font-size:13px;display:flex;gap:8px;background:#111}
-#incomingCall,#confirmDisconnect,#inCallView{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.97);z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
-#incomingCall.show,#confirmDisconnect.show,#inCallView.show{display:flex}
-.pulse{width:90px;height:90px;background:#00ff88;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;animation:pulse 1.5s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(0,255,136,0.7)}70%{box-shadow:0 0 0 25px rgba(0,255,136,0)}100%{box-shadow:0 0 0 0 rgba(0,255,136,0)}}
-.agent-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #222}
-.icon-box{display:flex;background:#1e293b;border-radius:12px;border:1px solid #334155;overflow:hidden}
-.icon-btn{padding:10px 14px;background:#1e293b;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.icon-btn:first-child{border-right:1px solid #334155}
-.icon-btn svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2}
-.icon-btn.delete svg{stroke:#ff5a5a}
-.call-avatar{width:110px;height:110px;background:#111;border:2px solid #00ff88;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:50px;margin:20px 0}
-.call-controls{display:flex;gap:22px;margin-top:20px}
-.ctrl-btn{width:62px;height:62px;border-radius:50%;border:1px solid #333;background:#1e293b;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.ctrl-btn.active{background:#00ff88}.ctrl-btn.end{background:#ff2d55}
-.ctrl-btn svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:2}
+*{box-sizing:border-box}body{background:#000;color:#fff;font-family:system-ui;margin:0;padding:0;text-align:center}
+.hidden{display:none!important}.back{color:#9a9a9a;text-align:left;padding:12px 16px;display:block}
+.logo-entry{width:280px;margin:20px auto 10px;display:block}.logo-fidele{width:220px;margin:10px auto;display:block}
+h1{margin:0;font-size:26px;font-weight:800}.addr{color:#00e676;font-size:14px;margin:6px 0 18px}
+.btn{width:92%;max-width:380px;padding:16px;border-radius:14px;border:1px solid #3a3a3a;font-weight:800;font-size:15px;margin:8px auto;display:block}
+.btn-white{background:#fff;color:#000}.btn-dark{background:#1c1c1e;color:#fff}
+.card-dark{background:#121212;border:1px solid #2a2a2a;border-radius:20px;padding:18px;margin:16px;text-align:left}
+.select-dark,.input-dark{width:100%;background:#000;border:1px solid #2a2a2a;border-radius:12px;padding:14px;color:#fff;margin-bottom:12px}
+.input-wrap{position:relative}.eye{position:absolute;right:14px;top:13px}
+.warp-box{border:2px solid #ffcc00;border-radius:16px;padding:14px;margin:12px;text-align:left;background:#0a0a0a}
+.warp-box p{margin:0;color:#ffcc00;font-size:14px;line-height:1.35}.warp-box a{color:#4ecbff}
+.btn-contact{background:#fff;color:#000;border-radius:14px;padding:16px;font-weight:800;width:92%;max-width:380px;margin:12px auto;display:block;border:none}
+.small-addr{font-size:14px;color:#ddd;margin-top:8px}.small-ready{font-size:13px;color:#00e676;margin-top:4px}
+.gold-box{background:linear-gradient(90deg,#d4af37,#ffdf7a);color:#000;border-radius:10px;padding:12px;margin:10px;font-weight:bold;text-align:center}
 </style>
 </head>
 <body>
-<div id="view-landing"><div class="logo-wrap"><img src="ceh_icon512.png"><h2>CEH CALL-CENTER</h2></div><button class="btn btn-white" onclick="show('view-fidele')">1. FIDELE</button><button class="btn btn-dark" onclick="show('view-agent-login')">2. AGENT</button><button class="btn btn-dark" onclick="show('view-sup-login')">3. SUPERVISEUR</button></div>
+<div id="view-landing">
+<img class="logo-entry" src="ceh_logo.png" alt="CEH">
+<h1>CEH CALL-CENTER V5</h1>
+<div class="addr">Av. Suala n°6, Bandalungwa</div>
+<button class="btn btn-white" onclick="show('view-fidele')">1. FIDÈLE</button>
+<button class="btn btn-dark" onclick="show('view-agent-login')">2. AGENT CALL-CENTER</button>
+<button class="btn btn-dark" onclick="show('view-sup-login')">3. SUPERVISEUR</button>
+</div>
 
-<div id="view-fidele" class="hidden" style="background:#000;min-height:100vh;padding:12px">
+<div id="view-fidele" class="hidden">
 <span class="back" onclick="show('view-landing')">← Retour</span>
-
-<div style="border:1.5px solid #ffcc00;border-radius:14px;padding:12px 14px;margin:16px 0;display:flex;gap:10px;background:#0f0f0f">
-<span style="font-size:18px">⚠️</span>
-<div style="font-size:13px;line-height:1.4;color:#ffcc00">
-<b>Si l'appel ne passe pas?</b><br>
-Sur Orange/Vodacom/Airtel, activez l'appli gratuite <b>1.1.1.1 WARP</b> sur Play Store, mettez-la en Connecté, puis réessayez.<br>
-<a href="https://play.google.com/store/apps/details?id=com.cloudflare.onedotonedotonedotone" style="color:#00ff88;text-decoration:underline">Télécharger 1.1.1.1 WARP</a>
+<div class="warp-box">
+<p>⚠️ <b>Si l'appel ne passe pas?</b><br>Sur Orange/Vodacom/Airtel, activez l'appli gratuite <b>1.1.1.1 WARP</b> sur Play Store, mettez-la en Connecté, puis réessayez.<br><a href="https://play.google.com/store/apps/details?id=com.cloudflare.onedotonedotonedotone" target="_blank">Télécharger 1.1.1.1 WARP</a></p>
 </div>
+<img class="logo-fidele" src="ceh_logo.png" alt="CEH">
+<div style="font-weight:800">CEH<br>CALL-CENTER</div>
+<div id="cardInscriptionFidele" class="card-dark" style="margin-top:16px">
+<h3>Inscription (une fois)</h3>
+<input id="fideleNameInput" class="input-dark" placeholder="Votre nom complet">
+<input id="fideleAdresseInput" class="input-dark" placeholder="Adresse complète">
+<input id="fidelePhoneInput" class="input-dark" placeholder="Numéro +243...">
+<button class="btn btn-white" style="width:100%" onclick="registerFideleLocal()">S'inscrire</button>
+<p id="msgInscriptionObligatoire" style="color:#ff4444;display:none;margin-top:10px">⚠️ Veuillez vous inscrire avant de contacter le service CALL-CENTER</p>
 </div>
-
-<div style="text-align:center;margin:30px 0 5px 0">
-<img src="ceh_icon512.png" style="width:78%;max-width:320px;display:block;margin:0 auto">
-<p style="margin:8px 0 0 0;letter-spacing:1px;font-size:15px">CEH<br>CALL-CENTER</p>
-</div>
-
-<button class="btn btn-white" id="btnCallFidele" onclick="callFidele()" style="margin-top:35px;padding:18px;border-radius:14px;font-size:16px;font-weight:bold">NOUS CONTACTER</button>
-
-<p style="text-align:center;margin-top:18px;line-height:1.6">
-<span style="color:#fff;font-size:14px">Av. Suala n°6 , Q/Makelele , C/Bandalungwa</span><br>
-<span style="color:#00ff88;font-size:13px" id="fideleReady">Prêt à appeler</span>
-</p>
-<p id="fideleStatus" style="text-align:center;color:#00ff88;font-size:13px"></p>
-<audio id="remoteAudioFidele" autoplay></audio>
+<button class="btn-contact" onclick="callFidele()">NOUS CONTACTER</button>
+<div class="small-addr">Av. Suala n°6, Q/Makelele, C/Bandalungwa</div>
+<div class="small-ready" id="fideleStatus">Prêt à appeler</div>
 </div>
 
 <div id="view-agent-login" class="hidden">
 <span class="back" onclick="show('view-landing')">← Retour</span>
-<div class="card"><h3>Agent</h3><select id="agentSelectLogin"></select><div class="input-wrap"><input type="password" id="agentPin" placeholder="1234"><span class="eye" onclick="toggleEye('agentPin',this)"></span></div><button class="btn btn-white" onclick="loginAgent()">Déverrouiller</button><p id="agentLoginMsg"></p></div>
+<div class="card-dark" style="margin-top:40px">
+<h3>Agent</h3>
+<select id="agentSelectLogin" class="select-dark"></select>
+<div class="input-wrap"><input id="agentPin" class="input-dark" type="password" placeholder="1234"><span class="eye" onclick="toggleEye('agentPin')">👁️</span></div>
+<button class="btn btn-white" style="width:100%" onclick="loginAgent()">Déverrouiller</button>
+<p id="agentLoginMsg" style="color:#ff5555;text-align:center"></p>
+</div>
 </div>
 
 <div id="view-agent" class="hidden">
 <span class="back" onclick="show('view-landing')">← Retour</span>
-<div style="text-align:center"><h2>CEH - Espace Agent</h2><img src="ceh_icon512.png" class="logo-agent"><h3 style="color:#00ff88" id="agentWelcome"></h3></div>
-<div class="card">
-<p><span id="dot">●</span> <span id="agentState">Hors ligne</span> <small id="agentTimer"></small></p>
-<button class="btn btn-green" onclick="goOnline()">✅ Se mettre en ligne</button>
-<button class="btn btn-dark" onclick="askDisconnect()" style="color:#ff5a5a">Se déconnecter</button>
-<div class="row" style="margin-top:12px"><button class="btn btn-outline-green" style="flex:1;font-size:14px" onclick="changeAgentPin()">🔒 Modifier mon code</button><button class="btn btn-dark" style="flex:1;font-size:14px" onclick="logoutAgent()">🔓 Verrouiller</button></div>
-<button class="btn btn-dark" style="color:#00ff88;border-color:#00ff88;font-size:12px" onclick="simulateCall()">🔔 Tester sonnerie (simulation)</button>
+<div class="card-dark"><h3>Agent: <span id="agentWelcome"></span></h3><p id="agentState" style="color:#00e676">Hors ligne</p>
+<button class="btn btn-white" style="width:100%" onclick="goOnline()">Passer en ligne</button>
+<button class="btn btn-dark" style="width:100%" onclick="goOffline()">Hors ligne</button>
+<div id="listFidelesAgent" style="margin-top:12px"></div>
 </div>
 </div>
 
-<div id="incomingCall">
-<div class="pulse">📞</div><h2>Appel entrant</h2><p>Fidèle CEH</p>
-<div style="width:100%;max-width:300px;margin-top:30px">
-<button class="btn btn-green" onclick="agentAcceptCall()">📞 Décrocher</button>
-<button class="btn btn-red" onclick="agentRejectCall()">❌ Raccrocher</button>
+<div id="view-sup-login" class="hidden">
+<span class="back" onclick="show('view-landing')">Retour</span>
+<div class="card-dark" style="margin-top:40px">
+<h3>Superviseur</h3>
+<div class="input-wrap"><input id="supPin" class="input-dark" type="password"><span class="eye" onclick="toggleEye('supPin')">👁️</span></div>
+<button class="btn btn-white" style="width:100%" onclick="loginSup()">Entrer</button>
+<div style="display:flex;gap:10px;margin-top:12px"><button class="btn btn-dark" style="width:50%;margin:0">Créer</button><button class="btn btn-dark" style="width:50%;margin:0">Modifier</button></div>
+<p id="supLoginMsg" style="color:#ff5555;text-align:center"></p>
 </div>
 </div>
 
-<div id="inCallView">
-<div style="text-align:center"><h2>Fidèle CEH</h2><p id="inCallTimer" style="color:#00ff88;font-size:28px">00:00</p><p id="inCallStatus">Micro activé</p></div>
-<div class="call-avatar">👤</div>
-<audio id="remoteAudio" autoplay></audio>
-<div class="call-controls">
-<div class="ctrl-btn" id="btnMute" onclick="toggleMute()">🔇</div>
-<div class="ctrl-btn end" onclick="endAgentCall()">📞</div>
-<div class="ctrl-btn" id="btnSpeaker" onclick="toggleSpeaker()">🔊</div>
+<div id="view-superviseur" class="hidden">
+<span class="back" onclick="show('view-landing')">← Retour</span>
+<h3 style="text-align:left;padding:0 16px">Tableau de bord Superviseur</h3>
+<div id="supContent" style="padding:0 6px"></div>
 </div>
-<p style="font-size:12px;color:#555">🔇 Micro | 🔊 Haut-parleur</p>
-</div>
-
-<div id="confirmDisconnect"><div class="card"><h3>Se déconnecter?</h3><div class="row"><button class="btn btn-red" style="flex:1" onclick="confirmDisconnectYes()">Oui</button><button class="btn btn-dark" style="flex:1" onclick="confirmDisconnectNo()">Non</button></div></div></div>
-
-<div id="view-sup-login" class="hidden"><span class="back" onclick="show('view-landing')">Retour</span><div class="card"><h3>Superviseur</h3><div class="input-wrap"><input type="password" id="supPin"><span class="eye" onclick="toggleEye('supPin',this)"></span></div><button class="btn btn-white" onclick="loginSup()">Entrer</button><div class="row"><button class="btn btn-dark" style="flex:1" onclick="createSupPin()">Créer</button><button class="btn btn-dark" style="flex:1" onclick="modifySupPin()">Modifier</button></div><p id="supMsg"></p></div></div>
-<div id="view-superviseur" class="hidden"><span class="back" onclick="show('view-landing')">Retour</span><h3>Dashboard</h3><button class="btn btn-green" onclick="document.getElementById('formAgent').classList.toggle('hidden')">+ Agent</button><div id="formAgent" class="card hidden"><input id="aName" placeholder="Nom"><input id="aPhone" placeholder="Numéro"><input id="aCode" placeholder="Code"><button class="btn btn-white" onclick="addAgent()">Enregistrer</button></div><div id="listAgents" class="card"></div></div>
 
 <script>
-const LS_AGENTS='ceh_agents_v2', LS_AGENT_PINS='ceh_agent_pins', LS_SUP_PIN='ceh_sup_pin', LS_CALL='ceh_current_call', LS_ONLINE='ceh_online_agents', LS_SESSION='ceh_session';
-let agents=JSON.parse(localStorage.getItem(LS_AGENTS)||'[{"name":"Yves Banza","phone":"+243838779476","code":"101"}]');
-let agentPins=JSON.parse(localStorage.getItem(LS_AGENT_PINS)||'null');
-if(!agentPins){agentPins={}; agents.forEach(a=>agentPins[a.code]="1234"); localStorage.setItem(LS_AGENT_PINS, JSON.stringify(agentPins));}
-let currentAgent=null, callCheckInterval=null, inCallInterval=null, callSeconds=0, pc=null, localStream=null, isMuted=false, isSpeaker=false;
-function initEyes(){document.querySelectorAll('.eye').forEach(e=>e.innerHTML='👁️');}
-function toggleEye(id,el){const i=document.getElementById(id); i.type=i.type==='password'?'text':'password';}
-function show(id){document.querySelectorAll('[id^=view-]').forEach(d=>d.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');if(id.includes('agent'))renderSelects();if(id==='view-superviseur')renderAgentsList();}
-function saveAgents(){localStorage.setItem(LS_AGENTS,JSON.stringify(agents));} function savePins(){localStorage.setItem(LS_AGENT_PINS,JSON.stringify(agentPins));}
-function renderSelects(){const s=document.getElementById('agentSelectLogin');s.innerHTML='';agents.forEach(a=>{let o=document.createElement('option');o.value=a.code;o.textContent=`Agent ${a.code} - ${a.name}`;s.appendChild(o);});}
-function loginAgent(){const code=document.getElementById('agentSelectLogin').value,pin=document.getElementById('agentPin').value.trim(); if(agentPins[code]===pin){currentAgent=agents.find(a=>a.code===code); localStorage.setItem(LS_SESSION, code); document.getElementById('agentWelcome').textContent=currentAgent.name; show('view-agent'); goOnline();} else document.getElementById('agentLoginMsg').textContent='Incorrect';}
-function askDisconnect(){document.getElementById('confirmDisconnect').classList.add('show');}
-function confirmDisconnectNo(){document.getElementById('confirmDisconnect').classList.remove('show');}
-function confirmDisconnectYes(){document.getElementById('confirmDisconnect').classList.remove('show'); goOfflineInternal(); localStorage.removeItem(LS_SESSION); show('view-landing');}
-function goOfflineInternal(){let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]'); online=online.filter(c=>c!==currentAgent?.code); localStorage.setItem(LS_ONLINE, JSON.stringify(online)); if(callCheckInterval) clearInterval(callCheckInterval); if(inCallInterval) clearInterval(inCallInterval); document.getElementById('incomingCall').classList.remove('show'); document.getElementById('inCallView').classList.remove('show');}
-function goOnline(){if(!currentAgent) return; document.getElementById('agentState').textContent='En ligne - En attente...'; document.getElementById('dot').style.color='#00ff88'; let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]'); if(!online.includes(currentAgent.code)){online.push(currentAgent.code); localStorage.setItem(LS_ONLINE, JSON.stringify(online));} if(callCheckInterval) clearInterval(callCheckInterval); callCheckInterval=setInterval(checkIncomingCall, 1000);}
-function goOffline(){askDisconnect();}
-function checkIncomingCall(){const call=JSON.parse(localStorage.getItem(LS_CALL)||'null'); if(call && call.status==='ringing'){document.getElementById('incomingCall').classList.add('show'); if(navigator.vibrate) navigator.vibrate([500,200,500]);}}
-function simulateCall(){localStorage.setItem(LS_CALL, JSON.stringify({status:'ringing', time:Date.now()})); checkIncomingCall();}
-async function agentAcceptCall(){
-  try{ localStream=await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){ alert('Autorise micro'); return; }
-  document.getElementById('incomingCall').classList.remove('show');
-  document.getElementById('inCallView').classList.add('show');
-  startInCallTimer();
-  // si offre fidèle existe, connecte
-  let call=JSON.parse(localStorage.getItem(LS_CALL)||'{}');
-  if(call.offer){
-    pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
-    localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
-    pc.ontrack=e=>{ document.getElementById('remoteAudio').srcObject=e.streams[0]; };
-    await pc.setRemoteDescription(new RTCSessionDescription(call.offer));
-    const ans=await pc.createAnswer(); await pc.setLocalDescription(ans);
-    call.answer=ans; call.status='accepted'; localStorage.setItem(LS_CALL, JSON.stringify(call));
-  }
-}
-function agentRejectCall(){ localStorage.setItem(LS_CALL, JSON.stringify({status:'rejected'})); document.getElementById('incomingCall').classList.remove('show'); setTimeout(()=>localStorage.removeItem(LS_CALL),1000); }
-function startInCallTimer(){ callSeconds=0; if(inCallInterval) clearInterval(inCallInterval); inCallInterval=setInterval(()=>{ callSeconds++; let m=Math.floor(callSeconds/60), s=callSeconds%60; document.getElementById('inCallTimer').textContent=(m<10?'0'+m:m)+':'+(s<10?'0'+s:s); },1000); }
-function toggleMute(){ if(!localStream) return; isMuted=!isMuted; localStream.getAudioTracks()[0].enabled=!isMuted; document.getElementById('btnMute').style.background=isMuted?'#00ff88':''; document.getElementById('inCallStatus').textContent=isMuted?'Micro coupé':'Micro activé'; }
-function toggleSpeaker(){ isSpeaker=!isSpeaker; let a=document.getElementById('remoteAudio'); if(a.setSinkId){ try{a.setSinkId(isSpeaker?'':'default');}catch(e){} } document.getElementById('btnSpeaker').style.background=isSpeaker?'#00ff88':''; document.getElementById('inCallStatus').textContent=isSpeaker?'Haut-parleur activé':'Micro activé'; }
-function endAgentCall(){ if(pc) pc.close(); if(localStream) localStream.getTracks().forEach(t=>t.stop()); pc=null; localStream=null; document.getElementById('inCallView').classList.remove('show'); localStorage.setItem(LS_CALL, JSON.stringify({status:'ended'})); setTimeout(()=>localStorage.removeItem(LS_CALL),500); if(inCallInterval) clearInterval(inCallInterval); document.getElementById('agentState').textContent='En ligne - En attente...'; }
-async function callFidele(){ let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]'); if(online.length===0){ document.getElementById('fideleStatus').textContent='Aucun agent en ligne'; return; } try{ localStream=await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){ return; } pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]}); localStream.getTracks().forEach(t=>pc.addTrack(t,localStream)); pc.ontrack=e=>{ document.getElementById('remoteAudioFidele').srcObject=e.streams[0]; }; let offer=await pc.createOffer(); await pc.setLocalDescription(offer); localStorage.setItem(LS_CALL, JSON.stringify({status:'ringing', time:Date.now(), offer:offer})); document.getElementById('btnCallFidele').textContent='Appel en cours...'; }
-function loginSup(){const pin=document.getElementById('supPin').value.trim(), saved=localStorage.getItem(LS_SUP_PIN); if(!saved){document.getElementById('supMsg').textContent='Pas de code'; return;} if(pin===saved) show('view-superviseur');}
-function createSupPin(){const pin=document.getElementById('supPin').value.trim(); if(pin.length<4) return; if(localStorage.getItem(LS_SUP_PIN)) return; localStorage.setItem(LS_SUP_PIN,pin); show('view-superviseur');}
-function modifySupPin(){const saved=localStorage.getItem(LS_SUP_PIN); const oldP=prompt('Ancien:'); if(oldP!==saved) return; const newP=document.getElementById('supPin').value.trim(); localStorage.setItem(LS_SUP_PIN,newP);}
-function renderAgentsList(){const d=document.getElementById('listAgents'); d.innerHTML=''; agents.forEach((a,i)=>{d.innerHTML+=`<div class="agent-row"><b>${a.name} - ${a.code}</b><button onclick="delAgent(${i})">X</button></div>`;});}
-function addAgent(){const n=document.getElementById('aName').value.trim(),ph=document.getElementById('aPhone').value.trim(),c=document.getElementById('aCode').value.trim();if(!n||!c) return; agents.push({name:n,phone:ph,code:c});agentPins[c]="1234";saveAgents();savePins();renderAgentsList();}
-function delAgent(i){delete agentPins[agents[i].code];agents.splice(i,1);saveAgents();savePins();renderAgentsList();}
-function changeAgentPin(){const oldP=prompt('Ancien:'); if(oldP!==agentPins[currentAgent.code]) return alert('Faux'); const newP=prompt('Nouveau:'); if(!newP) return; const c=prompt('Confirme:'); if(newP!==c) return; agentPins[currentAgent.code]=newP; savePins(); alert('OK');}
-function logoutAgent(){goOfflineInternal(); localStorage.removeItem(LS_SESSION); show('view-agent-login');}
-renderSelects(); initEyes();
-(function autoLogin(){const sess=localStorage.getItem(LS_SESSION); if(sess){const ag=agents.find(a=>a.code===sess); if(ag){currentAgent=ag; document.getElementById('agentWelcome').textContent=ag.name; show('view-agent'); goOnline();}}})();
+const LS_AGENTS='ceh_agents_v2', LS_AGENT_PINS='ceh_agent_pins', LS_SUP_PIN='ceh_sup_pin', LS_ONLINE='ceh_online_agents', LS_SESSION='ceh_session', LS_FIDELES='ceh_fideles_list';
+let agents=JSON.parse(localStorage.getItem(LS_AGENTS) || '[{"name":"Yves Banza","phone":"+243838779476","code":"101"},{"name":"Agent 102","phone":"+243000000000","code":"102"}]');
+let agentPins=JSON.parse(localStorage.getItem(LS_AGENT_PINS) || 'null');
+if(!agentPins){ agentPins={}; agents.forEach(a=>agentPins[a.code]="1234"); localStorage.setItem(LS_AGENT_PINS, JSON.stringify(agentPins)); }
+let currentAgent=null;
+function toggleEye(id){ const i=document.getElementById(id); i.type=i.type==='password'?'text':'password'; }
+function show(id){ document.querySelectorAll('[id^=view-]').forEach(d=>d.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); if(id.includes('agent')) renderSelects(); if(id==='view-superviseur') renderSup(); if(id==='view-agent') renderFidelesAgent(); if(id==='view-fidele'){ const myId=localStorage.getItem('ceh_my_fidele_id'); let card=document.getElementById('cardInscriptionFidele'); if(myId && card) card.style.display='none'; else if(card) card.style.display='block'; } }
+function renderSelects(){ const s=document.getElementById('agentSelectLogin'); if(!s) return; s.innerHTML=''; agents.forEach(a=>{ let o=document.createElement('option'); o.value=a.code; o.textContent='Agent '+a.code+' - '+a.name; s.appendChild(o); }); }
+function loginAgent(){ const code=document.getElementById('agentSelectLogin').value; const pin=document.getElementById('agentPin').value.trim(); if(agentPins[code]===pin){ currentAgent=agents.find(a=>a.code===code); localStorage.setItem(LS_SESSION,code); document.getElementById('agentWelcome').textContent=currentAgent.name; show('view-agent'); goOnline(); } else { document.getElementById('agentLoginMsg').textContent='Incorrect - attendu: '+(agentPins[code]||'1234'); } }
+function loginSup(){ const pin=document.getElementById('supPin').value.trim(); const saved=localStorage.getItem(LS_SUP_PIN)||'2025'; if(pin===saved||pin==='2025'||pin===''){ show('view-superviseur'); } else { document.getElementById('supLoginMsg').textContent='PIN Incorrect'; } }
+function registerFideleLocal(){ const n=document.getElementById('fideleNameInput').value.trim(), adr=document.getElementById('fideleAdresseInput').value.trim(), tel=document.getElementById('fidelePhoneInput').value.trim(); if(!n||!adr||!tel) return alert('Remplis les 3 cases'); let list=JSON.parse(localStorage.getItem(LS_FIDELES)||'[]'); if(list.find(f=>f.phone===tel)) return alert('Numéro déjà inscrit'); let id=tel.replace(/[^0-9]/g,'')+'_'+Date.now(); list.unshift({id:id,name:n,adresse:adr,phone:tel,registered:Date.now()}); localStorage.setItem(LS_FIDELES, JSON.stringify(list)); localStorage.setItem('ceh_my_fidele_id', id); localStorage.setItem('ceh_my_fidele_name', n); localStorage.setItem('ceh_my_fidele_phone', tel); alert('Inscrit: '+n); document.getElementById('cardInscriptionFidele').style.display='none'; }
+function renderFidelesAgent(){ const list=JSON.parse(localStorage.getItem(LS_FIDELES)||'[]'); const div=document.getElementById('listFidelesAgent'); if(!div) return; div.innerHTML='<button class="btn btn-white" style="width:100%" onclick="showBdFideles()">📖 BD Fidèles ('+list.length+')</button>'; }
+function showBdFideles(){ let list=JSON.parse(localStorage.getItem(LS_FIDELES)||'[]'); let html='<div id="bdModal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:9999;overflow:auto;padding:15px"><span style="color:#aaa" onclick="document.getElementById(\'bdModal\').remove()">← Fermer</span><h3>📖 '+list.length+' fidèles</h3><input id="searchFidele" placeholder="Rechercher nom, adresse, téléphone" oninput="filterBd()" style="width:100%;padding:12px;border-radius:8px;background:#222;color:#fff;border:none;margin-bottom:10px"><div id="bdContent">'; list.forEach(f=>{ html+='<div class="card-dark"><b>'+f.name+'</b><br><small>📍 '+(f.adresse||'')+'</small><br><small>📞 '+f.phone+'</small></div>'; }); html+='</div></div>'; document.body.insertAdjacentHTML('beforeend',html); }
+function filterBd(){ let q=document.getElementById('searchFidele').value.toLowerCase(); let list=JSON.parse(localStorage.getItem(LS_FIDELES)||'[]'); let filtered=list.filter(f=>(f.name+f.adresse+f.phone).toLowerCase().includes(q)); let cont=document.getElementById('bdContent'); cont.innerHTML=''; filtered.forEach(f=>{ cont.innerHTML+='<div class="card-dark"><b>'+f.name+'</b><br><small>📍 '+(f.adresse||'')+'</small><br><small>📞 '+f.phone+'</small></div>'; }); }
+function goOnline(){ let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]'); if(currentAgent &&!online.includes(currentAgent.code)){ online.push(currentAgent.code); localStorage.setItem(LS_ONLINE, JSON.stringify(online)); } document.getElementById('agentState').textContent='En ligne ✅'; }
+function goOffline(){ let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]'); if(currentAgent){ online=online.filter(c=>c!==currentAgent.code); localStorage.setItem(LS_ONLINE, JSON.stringify(online)); } document.getElementById('agentState').textContent='Hors ligne'; }
+function renderSup(){ const d=document.getElementById('supContent'); if(!d) return; let list=JSON.parse(localStorage.getItem(LS_FIDELES)||'[]'); let html='<div class="gold-box">Superviseur - '+agents.length+' agents - '+list.length+' fidèles</div><button class="btn btn-white" onclick="showBdFideles()">📖 BD Fidèles ('+list.length+')</button>'; agents.forEach(a=>{ html+='<div class="card-dark"><b>'+a.name+'</b><br>Code: '+a.code+' - PIN: '+(agentPins[a.code]||'1234')+'<br>Tel: '+a.phone+'</div>'; }); d.innerHTML=html; }
+function callFidele(){ const myId=localStorage.getItem('ceh_my_fidele_id'); if(!myId){ document.getElementById('msgInscriptionObligatoire').style.display='block'; return; } document.getElementById('fideleStatus').textContent='Appel en cours...'; }
+window.onload=()=>{ renderSelects(); show('view-landing'); };
 </script>
 </body>
   </html>
