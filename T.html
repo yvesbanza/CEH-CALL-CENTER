@@ -57,13 +57,15 @@ input,select{width:100%;padding:12px;border-radius:10px;border:1px solid #333;ba
   <div class="logo-fidele" style="margin-top:20px"><img src="ceh_icon512.png"></div>
   <p style="text-align:center;margin:8px 0 0 0">CEH CALL-CENTER</p>
 
-  <div class="card">
-    <h4>Inscription (une fois)</h4>
-    <input id="fideleNameInput" placeholder="Votre nom complet">
-    <input id="fideleQuartierInput" placeholder="Quartier">
-    <button class="btn btn-dark" onclick="registerFideleLocal()">S'inscrire</button>
-    <p style="font-size:10px;color:#888">Pour que l'agent puisse vous rappeler même si vous n'appelez pas.</p>
-  </div>
+  <div class="card" id="cardInscriptionFidele">
+  <h4>Inscription (une fois)</h4>
+  <input id="fideleNameInput" placeholder="Votre nom complet">
+  <input id="fideleAdresseInput" placeholder="Adresse complète">
+  <input id="fidelePhoneInput" placeholder="Numéro de téléphone">
+  <button class="btn btn-dark" onclick="registerFideleLocal()">S'inscrire</button>
+  <p style="font-size:10px;color:#888">Pour que l'agent puisse vous rappeler.</p>
+</div>
+<p id="msgInscriptionObligatoire" style="text-align:center;color:#ff5555;font-weight:bold;margin-top:10px;display:none">⚠️ Veuillez vous inscrire avant de contacter le service CALL-CENTER</p>
 
   <button class="btn btn-white" id="btnCallFidele" onclick="callFidele()" style="margin-top:10px">NOUS CONTACTER</button>
   <p style="text-align:center"><span style="color:#aaa">+243 838 779 476</span><br><span style="color:#00ff88" id="fideleReady">Prêt à appeler</span></p>
@@ -244,6 +246,14 @@ function endAgentCall(){ if(pc) pc.close(); if(localStream) localStream.getTrack
 async function callFidele(){
   const btn=document.getElementById('btnCallFidele'), status=document.getElementById('fideleStatus');
   let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]');
+    const myId=localStorage.getItem('ceh_my_fidele_id');
+  if(!myId){
+    document.getElementById('msgInscriptionObligatoire').style.display='block';
+    document.getElementById('msgInscriptionObligatoire').scrollIntoView();
+    if(navigator.vibrate) navigator.vibrate([200,100,200]);
+    return;
+  }
+  document.getElementById('msgInscriptionObligatoire').style.display='none';
 
   // Affiche directement le tableau de ton screenshot
   document.getElementById('inCallFideleView').classList.add('show');
