@@ -197,16 +197,18 @@ function confirmDisconnectYes(){document.getElementById('confirmDisconnect').cla
 function goOfflineInternal(){let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]'); online=online.filter(c=>c!==currentAgent?.code); localStorage.setItem(LS_ONLINE, JSON.stringify(online)); if(callCheckInterval) clearInterval(callCheckInterval); document.getElementById('incomingCall').classList.remove('show'); const r=document.getElementById('ringtone'); r.pause();}
 function goOnline(){if(!currentAgent) return; document.getElementById('agentState').textContent='En ligne - En attente...'; document.getElementById('dot').style.color='#00ff88'; let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]'); if(!online.includes(currentAgent.code)){online.push(currentAgent.code); localStorage.setItem(LS_ONLINE, JSON.stringify(online));} if(Notification && Notification.permission!=='granted'){Notification.requestPermission();} if(callCheckInterval) clearInterval(callCheckInterval); callCheckInterval=setInterval(checkIncomingCall, 1200); renderFidelesAgent();}
 function goOffline(){askDisconnect();}
+
 function checkIncomingCall(){
   const call=JSON.parse(localStorage.getItem(LS_CALL)||'null');
   if(call && (call.status==='ringing' || call.status==='ringing_pastoral')){
     document.getElementById('incomingCall').classList.add('show');
-    document.getElementById('callerInfo').textContent=(call.name||'Fidèle')+' appelle - '+(call.msg||'Appel CEH');
+    document.getElementById('callerInfo').textContent=(call.name||'Fidèle')+' appelle';
     const r=document.getElementById('ringtone'); r.volume=1.0; r.play().catch(()=>{});
     if(navigator.vibrate) navigator.vibrate([600,200,600]);
-    if(Notification && Notification.permission==='granted' && document.hidden){new Notification('CEH Appel entrant',{body:(call.name||'Fidèle')+' vous appelle'});}
   }
 }
+
+// 1 et 2 : L'AGENT DECROCHE = COMPTEUR COMMENCE
 async function agentAcceptCall(){
   let call=JSON.parse(localStorage.getItem(LS_CALL)||'{}');
   try{ localStream=await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){ alert('Micro refusé'); return; }
@@ -214,52 +216,169 @@ async function agentAcceptCall(){
   localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
   pc.ontrack=e=>{ document.getElementById('remoteAudio').srcObject=e.streams[0]; };
   pc.onicecandidate=e=>{ if(e.candidate){ let c=JSON.parse(localStorage.getItem(LS_CALL)||'{}'); c.iceAgent=c.iceAgent||[]; c.iceAgent.push(e.candidate); localStorage.setItem(LS_CALL, JSON.stringify(c)); }};
-  if(call.offer){ await pc.setRemoteDescription(new RTCSessionDescription(call.offer)); const answer=await pc.createAnswer(); await pc.setLocalDescription(answer); call.answer=answer; call.status='accepted'; call.agent=currentAgent.code; call.agentName=currentAgent.name; localStorage.setItem(LS_CALL, JSON.stringify(call)); }
-  else { call.status='accepted'; localStorage.setItem(LS_CALL, JSON.stringify(call)); }
+
+  if(call.offer){ await pc.setRemoteDescription(new RTCSessionDescription(call.offer)); const answer=await pc.createAnswer(); await pc.setLocalDescription(answer); call.answer=answer; }
+  call.status='accepted'; // <-- C'EST ICI QUE LE COMPTEUR VA DEMARRER CHEZ LE FIDELE
+  call.agent=currentAgent.code; call.agentName=currentAgent.name; call.acceptedAt=Date.now();
+  localStorage.setItem(LS_CALL, JSON.stringify(call));
+
   document.getElementById('incomingCall').classList.remove('show'); document.getElementById('ringtone').pause();
   document.getElementById('inCallView').classList.add('show');
-  startInCallTimer();
+  document.getElementById('inCallTimer').textContent='00:00';
+  document.getElementById('inCallStatus').textContent='Connecté';
+  startInCallTimer(); // compteur agent commence MAINTENANT
+
   let iceCheck=setInterval(async()=>{ let c=JSON.parse(localStorage.getItem(LS_CALL)||'{}'); if(c.status==='ended'){ clearInterval(iceCheck); endAgentCall(); } if(c.iceFidele && c.iceFidele.length){ for(let ice of c.iceFidele){ try{ await pc.addIceCandidate(ice);}catch(e){} } c.iceFidele=[]; localStorage.setItem(LS_CALL, JSON.stringify(c)); } },800);
 }
+
 function agentRejectCall(){ let c=JSON.parse(localStorage.getItem(LS_CALL)||'{}'); c.status='rejected'; localStorage.setItem(LS_CALL, JSON.stringify(c)); document.getElementById('incomingCall').classList.remove('show'); document.getElementById('ringtone').pause(); setTimeout(()=>localStorage.removeItem(LS_CALL),2000); }
+
 function startInCallTimer(){ callSeconds=0; if(inCallInterval) clearInterval(inCallInterval); inCallInterval=setInterval(()=>{ callSeconds++; let m=Math.floor(callSeconds/60), s=callSeconds%60; let txt=(m<10?'0'+m:m)+':'+(s<10?'0'+s:s); document.getElementById('inCallTimer').textContent=txt; document.getElementById('fideleCallTimer').textContent=txt; document.getElementById('agentTimer').textContent='('+txt+')'; },1000); }
+function stopTimer(){ if(inCallInterval) clearInterval(inCallInterval); }
+
 function toggleMute(){ if(!localStream) return; isMuted=!isMuted; localStream.getAudioTracks()[0].enabled=!isMuted; document.getElementById('btnMute').classList.toggle('active',isMuted); document.getElementById('inCallStatus').textContent=isMuted?'Micro coupé':'Micro activé'; }
 function toggleSpeaker(){ isSpeaker=!isSpeaker; let audio=document.getElementById('remoteAudio'); if(audio.setSinkId){ audio.setSinkId(isSpeaker?'default':'').catch(()=>{}); } document.getElementById('btnSpeaker').classList.toggle('active',isSpeaker); }
-function endAgentCall(){ if(pc) pc.close(); if(localStream) localStream.getTracks().forEach(t=>t.stop()); pc=null; localStream=null; document.getElementById('inCallView').classList.remove('show'); document.getElementById('ringtone').pause(); localStorage.setItem(LS_CALL, JSON.stringify({status:'ended'})); setTimeout(()=>localStorage.removeItem(LS_CALL),1000); if(inCallInterval) clearInterval(inCallInterval); document.getElementById('agentState').textContent='En ligne - En attente...'; }
+function endAgentCall(){ if(pc) pc.close(); if(localStream) localStream.getTracks().forEach(t=>t.stop()); pc=null; localStream=null; document.getElementById('inCallView').classList.remove('show'); document.getElementById('ringtone').pause(); localStorage.setItem(LS_CALL, JSON.stringify({status:'ended'})); setTimeout(()=>localStorage.removeItem(LS_CALL),1000); stopTimer(); document.getElementById('agentState').textContent='En ligne - En attente...'; }
+
+// 1 et 3 : LOGIQUE FIDELE
 async function callFidele(){
   const btn=document.getElementById('btnCallFidele'), status=document.getElementById('fideleStatus');
   let online=JSON.parse(localStorage.getItem(LS_ONLINE)||'[]');
-  if(online.length===0){ status.innerHTML='❌ Aucun agent en ligne.'; status.style.color='#ff5555'; return; }
+
+  // Affiche directement le tableau de ton screenshot
+  document.getElementById('inCallFideleView').classList.add('show');
+  document.getElementById('fideleCallTimer').textContent='00:00';
+  document.getElementById('fideleCallTimer').style.display='none'; // on cache le compteur au début
+  document.getElementById('voiceRecorderBox').classList.add('hidden');
+
+  if(online.length===0){
+    // 3. AUCUN AGENT
+    document.querySelector('#inCallFideleView h2').textContent='CEH Call-Center';
+    document.getElementById('fideleCallStatus').innerHTML='Aucun agent connecté.<br>Veuillez rappeler plus tard<br>ou laissez un message vocal';
+    document.getElementById('fideleCallStatus').style.color='#ffcc00';
+    document.getElementById('voiceRecorderBox').classList.remove('hidden');
+    document.getElementById('fideleCallTimer').style.display='none';
+    return;
+  }
+
+  // 1. AGENT EN LIGNE : On ne compte PAS encore
   try{ localStream=await navigator.mediaDevices.getUserMedia({audio:true}); }catch(e){ status.textContent='Micro refusé'; return; }
   pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
   localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
   pc.ontrack=e=>{ document.getElementById('remoteAudioFidele').srcObject=e.streams[0]; };
   pc.onicecandidate=e=>{ if(e.candidate){ let c=JSON.parse(localStorage.getItem(LS_CALL)||'{}'); c.iceFidele=c.iceFidele||[]; c.iceFidele.push(e.candidate); localStorage.setItem(LS_CALL, JSON.stringify(c)); }};
+
   const offer=await pc.createOffer(); await pc.setLocalDescription(offer);
   localStorage.setItem(LS_CALL, JSON.stringify({status:'ringing', time:Date.now(), offer:offer, name:localStorage.getItem('ceh_my_fidele_name')||'Fidèle CEH'}));
-  btn.textContent='📞 Appel en cours...'; btn.disabled=true; status.textContent='🔍 Ça sonne chez l\'agent...'; status.style.color='#ffcc00';
-  document.getElementById('inCallFideleView').classList.add('show');
-  startInCallTimer();
+
+  document.querySelector('#inCallFideleView h2').textContent='CEH Call-Center';
+  document.getElementById('fideleCallStatus').textContent='Appel en cours...';
+  document.getElementById('fideleCallStatus').innerHTML='Appel en cours<br><small style="color:#aaa">Veuillez patienter...</small>';
+  btn.textContent='NOUS CONTACTER';
+  status.textContent='';
+
+  // On attend que l'agent décroche pour démarrer le compteur
   let check=setInterval(async()=>{
     let c=JSON.parse(localStorage.getItem(LS_CALL)||'{}');
-    if(c.answer && pc &&!pc.remoteDescription){ await pc.setRemoteDescription(new RTCSessionDescription(c.answer)); status.textContent='✅ Connecté'; document.getElementById('fideleReady').textContent='En communication'; }
+    if(c.status==='accepted'){
+      // 2. AGENT A DECROCHE = ON DEMARRE COMPTEUR DES DEUX COTES
+      clearInterval(check);
+      document.getElementById('fideleCallTimer').style.display='block';
+      document.getElementById('fideleCallTimer').textContent='00:00';
+      document.getElementById('fideleCallStatus').textContent='Connecté';
+      document.getElementById('fideleCallStatus').style.color='#00ff88';
+      if(c.answer && pc &&!pc.remoteDescription){ await pc.setRemoteDescription(new RTCSessionDescription(c.answer)); }
+      startInCallTimer(); // compteur fidèle commence MAINTENANT
+    }
     if(c.iceAgent && c.iceAgent.length){ for(let ice of c.iceAgent){ try{ await pc.addIceCandidate(ice);}catch(e){} } c.iceAgent=[]; localStorage.setItem(LS_CALL, JSON.stringify(c)); }
-    if(c.status==='rejected'){ clearInterval(check); status.textContent='Agent occupé'; document.getElementById('inCallFideleView').classList.remove('show'); btn.textContent='NOUS CONTACTER'; btn.disabled=false; localStorage.removeItem(LS_CALL); }
+    if(c.status==='rejected'){ clearInterval(check); document.getElementById('fideleCallStatus').textContent='Agent occupé'; setTimeout(()=>endFideleCall(),1500); }
     if(c.status==='ended'){ clearInterval(check); endFideleCall(); }
   },800);
+
+  // Timeout 35s
+  setTimeout(()=>{ let c=JSON.parse(localStorage.getItem(LS_CALL)||'{}'); if(c.status==='ringing'){ clearInterval(check); document.getElementById('fideleCallStatus').innerHTML='Pas de réponse<br><small>Laissez un message vocal</small>'; document.getElementById('voiceRecorderBox').classList.remove('hidden'); if(pc) pc.close(); } },35000);
 }
+
 function toggleFideleMute(){ if(!localStream) return; fideleMuted=!fideleMuted; localStream.getAudioTracks()[0].enabled=!fideleMuted; document.getElementById('fideleMute').classList.toggle('active',fideleMuted); }
 function toggleFideleSpeaker(){ fideleSpeaker=!fideleSpeaker; let audio=document.getElementById('remoteAudioFidele'); if(audio.setSinkId){ audio.setSinkId(fideleSpeaker?'default':'').catch(()=>{}); } document.getElementById('fideleSpeaker').classList.toggle('active',fideleSpeaker); }
-function endFideleCall(){ if(pc) pc.close(); if(localStream) localStream.getTracks().forEach(t=>t.stop()); pc=null; localStream=null; document.getElementById('inCallFideleView').classList.remove('show'); document.getElementById('inCallView').classList.remove('show'); document.getElementById('btnCallFidele').textContent='NOUS CONTACTER'; document.getElementById('btnCallFidele').disabled=false; document.getElementById('fideleStatus').textContent='Appel terminé'; document.getElementById('fideleReady').textContent='Prêt à appeler'; localStorage.setItem(LS_CALL, JSON.stringify({status:'ended'})); setTimeout(()=>localStorage.removeItem(LS_CALL),1000); if(inCallInterval) clearInterval(inCallInterval); }
+function endFideleCall(){ if(pc) pc.close(); if(localStream) localStream.getTracks().forEach(t=>t.stop()); pc=null; localStream=null; document.getElementById('inCallFideleView').classList.remove('show'); document.getElementById('inCallView').classList.remove('show'); document.getElementById('btnCallFidele').textContent='NOUS CONTACTER'; document.getElementById('btnCallFidele').disabled=false; document.getElementById('fideleStatus').textContent='Appel terminé'; document.getElementById('fideleReady').textContent='Prêt à appeler'; document.getElementById('fideleCallTimer').style.display='block'; localStorage.setItem(LS_CALL, JSON.stringify({status:'ended'})); setTimeout(()=>localStorage.removeItem(LS_CALL),1000); stopTimer(); document.getElementById('voiceRecorderBox').classList.add('hidden');}
+
+// --- MESSAGE VOCAL TYPE WHATSAPP POUR SUPERVISEUR ---
+let mediaRecorder=null, audioChunks=[], recording=false, recTimer=null, recSec=0;
+const LS_VOCALS='ceh_vocals';
+
+function toggleVoiceRecord(){
+  const btn=document.getElementById('btnRecVoice'), txt=document.getElementById('recStatus');
+  if(!recording){ startVoiceRecord(); btn.style.background='#ff2d55'; txt.textContent='Enregistrement... 00:00 - Cliquez pour envoyer'; }
+  else { stopVoiceRecord(); btn.style.background='#00ff88'; }
+}
+async function startVoiceRecord(){
+  try{
+    let stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    mediaRecorder=new MediaRecorder(stream); audioChunks=[]; recording=true; recSec=0;
+    mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
+    mediaRecorder.onstop=async()=>{
+      let blob=new Blob(audioChunks,{type:'audio/webm'});
+      let reader=new FileReader();
+      reader.onloadend=()=>{
+        let vocals=JSON.parse(localStorage.getItem(LS_VOCALS)||'[]');
+        vocals.unshift({id:Date.now(), name:localStorage.getItem('ceh_my_fidele_name')||'Fidèle anonyme', date:new Date().toLocaleString(), audio:reader.result, duration:recSec});
+        localStorage.setItem(LS_VOCALS, JSON.stringify(vocals));
+        document.getElementById('recStatus').textContent='✅ Message envoyé au superviseur! '+recSec+'s';
+        setTimeout(()=>{ document.getElementById('voiceRecorderBox').classList.add('hidden'); endFideleCall(); },1500);
+      };
+      reader.readAsDataURL(blob);
+      stream.getTracks().forEach(t=>t.stop());
+    };
+    mediaRecorder.start();
+    recTimer=setInterval(()=>{ recSec++; let m=Math.floor(recSec/60), s=recSec%60; document.getElementById('recStatus').textContent='Enregistrement... '+(m<10?'0'+m:m)+':'+(s<10?'0'+s:s)+' - Cliquez pour envoyer'; },1000);
+  }catch(e){ alert('Micro refusé'); }
+}
+function stopVoiceRecord(){ if(mediaRecorder && recording){ mediaRecorder.stop(); recording=false; if(recTimer) clearInterval(recTimer); } }
+
 function loginSup(){const pin=document.getElementById('supPin').value.trim(), saved=localStorage.getItem(LS_SUP_PIN); if(!saved){document.getElementById('supMsg').textContent='Pas de code, tape puis Créer'; return;} if(pin===saved) show('view-superviseur'); else document.getElementById('supMsg').textContent='Incorrect';}
 function createSupPin(){const pin=document.getElementById('supPin').value.trim(); if(!pin||pin.length<4){document.getElementById('supMsg').textContent='Tape 4 chiffres'; return;} if(localStorage.getItem(LS_SUP_PIN)){document.getElementById('supMsg').textContent='Existe déjà'; return;} localStorage.setItem(LS_SUP_PIN,pin); alert('Créé: '+pin); show('view-superviseur');}
 function modifySupPin(){const saved=localStorage.getItem(LS_SUP_PIN); if(!saved) return; const oldP=prompt('Ancien:'); if(oldP!==saved) return alert('Faux'); const newP=document.getElementById('supPin').value.trim(); if(!newP||newP.length<4) return alert('Tape nouveau'); localStorage.setItem(LS_SUP_PIN,newP); alert('Modifié');}
-function renderAgentsList(){const d=document.getElementById('listAgents'); d.innerHTML='<h4>Agents ('+agents.length+')</h4>'; agents.forEach((a,i)=>{d.innerHTML+=`<div class="agent-row"><div class="agent-info"><b>${a.name} - ${a.code}</b><br><small style="color:#aaa">${a.phone}</small></div></div>`;});}
+
+function renderAgentsList(){
+  const d=document.getElementById('listAgents');
+  d.innerHTML='<h4>Agents ('+agents.length+')</h4>';
+  agents.forEach((a,i)=>{d.innerHTML+=`<div class="agent-row"><div class="agent-info"><b>${a.name} - ${a.code}</b><br><small style="color:#aaa">${a.phone}</small></div></div>`;});
+  // Affichage des vocaux pour superviseur - par ordre d'enregistrement
+  let vocals=JSON.parse(localStorage.getItem(LS_VOCALS)||'[]');
+  d.innerHTML+='<h4 style="margin-top:20px">📩 Messages vocaux fidèles ('+vocals.length+')</h4><p style="font-size:10px;color:#888">Du plus récent au plus ancien - Superviseur écoute ici</p>';
+  if(vocals.length===0) d.innerHTML+='<p style="color:#555">Aucun message</p>';
+  vocals.forEach((v,i)=>{
+    d.innerHTML+=`<div class="card" style="background:#1a1a1a"><b>${v.name}</b> <small style="color:#888">${v.date} - ${v.duration}s</small><br><audio controls src="${v.audio}" style="width:100%;margin-top:8px"></audio><button class="btn btn-dark" style="padding:6px;font-size:12px;margin-top:6px" onclick="deleteVocal(${i})">Supprimer</button></div>`;
+  });
+}
+function deleteVocal(i){ if(confirm('Supprimer?')){ let v=JSON.parse(localStorage.getItem(LS_VOCALS)||'[]'); v.splice(i,1); localStorage.setItem(LS_VOCALS, JSON.stringify(v)); renderAgentsList(); }}
 function addAgent(){const n=document.getElementById('aName').value.trim(),ph=document.getElementById('aPhone').value.trim(),c=document.getElementById('aCode').value.trim();if(!n||!ph||!c)return alert('Remplis');agents.push({name:n,phone:ph,code:c});agentPins[c]="1234";saveAgents();savePins();renderAgentsList();document.getElementById('formAgent').classList.add('hidden');}
 function changeAgentPin(){const oldP=prompt('Ancien:'); if(oldP!==agentPins[currentAgent.code]) return alert('Faux'); const newP=prompt('Nouveau:'); if(!newP||newP.length<4) return; const c=prompt('Confirme:'); if(newP!==c) return; agentPins[currentAgent.code]=newP; savePins(); alert('Nouveau: '+newP);}
 function logoutAgent(){goOfflineInternal(); localStorage.removeItem(LS_SESSION); show('view-agent-login');}
 renderSelects(); initEyes();
 (function autoLogin(){const sess=localStorage.getItem(LS_SESSION); if(sess && agentPins[sess]){const ag=agents.find(a=>a.code===sess); if(ag){currentAgent=ag; document.getElementById('agentWelcome').textContent=ag.name; show('view-agent'); goOnline();}}})();
+</script>
+
+<!-- UI Message vocal type WhatsApp -->
+<style>
+#voiceRecorderBox{margin-top:18px;background:#111;border:1px solid #222;border-radius:16px;padding:12px;text-align:center}
+#btnRecVoice{width:70px;height:70px;border-radius:50%;border:0;background:#00ff88;display:flex;align-items:center;justify-content:center;margin:10px auto;cursor:pointer;transition:0.2s}
+#btnRecVoice svg{width:32px;height:32px;stroke:#000;fill:none;stroke-width:2}
+</style>
+<div id="inCallFideleView">
+  <!-- ce div sera déplacé, on le laisse vide, le vrai est déjà dans body, on ajoute juste le recorder dedans via JS -->
+</div>
+<script>
+// Injecte le recorder dans la vue d'appel fidèle existante
+document.addEventListener('DOMContentLoaded',()=>{
+  let view=document.getElementById('inCallFideleView');
+  let box=document.createElement('div');
+  box.id='voiceRecorderBox';
+  box.className='hidden';
+  box.innerHTML=`<p style="color:#ffcc00;font-size:13px">🎤 Laissez un message vocal</p><button id="btnRecVoice" onclick="toggleVoiceRecord()"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button><p id="recStatus" style="font-size:12px;color:#aaa">Appuyez sur le micro pour enregistrer</p>`;
+  view.appendChild(box);
+});
 </script>
 </body>
 </html>
