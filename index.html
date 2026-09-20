@@ -122,7 +122,15 @@ async function showBdFideles(){let list=await getFidelesFromCloud();let html=`<d
 function filterBd(){let q=document.getElementById('searchBd').value.toLowerCase();document.querySelectorAll('.bd-item').forEach(el=>{el.style.display=el.dataset.search.includes(q)?'block':'none';});}
 function goOnline(){startSync();} function goOffline(){stopSync();}
 async function renderSup(){let list=await getFidelesFromCloud();document.getElementById('supCountBadge').textContent=list.length;document.getElementById('supContent').innerHTML=`<div style="background:gold;color:#000;padding:12px;border-radius:10px">${list.length} fidèles</div><button class="btn btn-white" onclick="showBdFideles()">Voir BD</button>`;}
-function callFidele(){let id=localStorage.getItem('ceh_my_fidele_id');if(!id)return alert('Inscris-toi');alert('Appel...');}
+function callFidele(){
+  let myId=localStorage.getItem('ceh_my_fidele_id');
+  if(!myId){
+    document.getElementById('msgInscriptionObligatoire').style.display='block';
+    return;
+  }
+  document.getElementById('msgInscriptionObligatoire').style.display='none';
+  window.location.href='tel:+243838779476';
+}
 function startSync(){stopSync();syncInterval=setInterval(async()=>{let l=await getFidelesFromCloud();let b=document.getElementById('countBadge');if(b)b.textContent=l.length+' fidèles';let b2=document.getElementById('supCountBadge');if(b2)b2.textContent=l.length;},10000);}
 function stopSync(){if(syncInterval)clearInterval(syncInterval);}
 window.onload=()=>{ renderSelects(); show('view-landing'); };
