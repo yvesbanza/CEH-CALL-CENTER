@@ -169,7 +169,7 @@ let agentPins=JSON.parse(localStorage.getItem(LS_AGENT_PINS) || 'null');
 if(!agentPins){ agentPins={}; agents.forEach(a=>agentPins[a.code]="1234"); localStorage.setItem(LS_AGENT_PINS, JSON.stringify(agentPins)); }
 let currentAgent=null;
 function toggleEye(id){ const i=document.getElementById(id); i.type=i.type==='password'?'text':'password'; }
-function show(id){ document.querySelectorAll('[id^=view-]').forEach(d=>d.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); if(id.includes('agent')) renderSelects(); if(id==='view-superviseur') renderSup(); if(id==='view-agent') renderFidelesAgent(); if(id==='view-fidele'){ const myId=localStorage.getItem('ceh_my_fidele_id'); let card=document.getElementById('cardInscriptionFidele'); if(myId && card) card.style.display='none'; else if(card) card.style.display='block'; } }
+function show(id){const q=document.querySelectorAll('[id^=view-]');q.forEach(d=>d.classList.add('hidden'));let el=document.getElementById(id);if(el)el.classList.remove('hidden');if(id==='view-fidele')checkFideleDejaInscrit();if(id==='view-agent')renderFidelesAgent();if(id==='view-superviseur')renderSup();if(id.includes('agent'))renderSelects();}
 function renderSelects(){ const s=document.getElementById('agentSelectLogin'); if(!s) return; s.innerHTML=''; agents.forEach(a=>{ let o=document.createElement('option'); o.value=a.code; o.textContent='Agent '+a.code+' - '+a.name; s.appendChild(o); }); }
 function loginAgent(){ const code=document.getElementById('agentSelectLogin').value; const pin=document.getElementById('agentPin').value.trim(); if(agentPins[code]===pin){ currentAgent=agents.find(a=>a.code===code); localStorage.setItem(LS_SESSION,code); document.getElementById('agentWelcome').textContent=currentAgent.name; show('view-agent'); goOnline(); } else { document.getElementById('agentLoginMsg').textContent='Incorrect - attendu: '+(agentPins[code]||'1234'); } }
 function loginSup(){ const pin=document.getElementById('supPin').value.trim(); const saved=localStorage.getItem(LS_SUP_PIN)||'2025'; if(pin===saved||pin==='2025'||pin===''){ show('view-superviseur'); } else { document.getElementById('supLoginMsg').textContent='PIN Incorrect'; } }
@@ -236,14 +236,7 @@ async function renderBDVoices(){
    <small style="color:#888">${new Date(v.time).toLocaleString()}</small>
   </div>`).join('');
   }
-function checkFideleDejaInscrit(){
-  let myId=localStorage.getItem('ceh_my_fidele_id');
-  if(myId){
-    document.getElementById('cardInscriptionFidele').style.display='none';
-    document.getElementById('msgFideleStatus').style.display='block';
-    document.getElementById('msgFideleStatus').textContent='✅ Vous êtes déjà inscrit';
-  }
-  }
+function checkFideleDejaInscrit(){let myId=localStorage.getItem('ceh_my_fidele_id');let card=document.getElementById('cardInscriptionFidele');let msg=document.getElementById('msgFideleStatus');let msg2=document.getElementById('msgFideleStatus2');if(myId){if(card)card.style.display='none';if(msg){msg.style.display='block';msg.textContent='✅ Vous êtes déjà inscrit';}if(msg2){msg2.style.display='block';msg2.textContent='✅ Vous êtes déjà inscrit';}}else{if(card)card.style.display='block';if(msg)msg.style.display='none';if(msg2)msg2.style.display='none';}}
 let currentCallId=null, callTimer=null, mediaRecorder=null, voiceChunks=[];
 async function callFidele(){
   let myId=localStorage.getItem('ceh_my_fidele_id');
