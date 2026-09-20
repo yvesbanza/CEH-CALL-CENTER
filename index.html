@@ -56,22 +56,37 @@ h1{margin:0;font-size:26px;font-weight:800}.addr{color:#00e676;font-size:14px;ma
 <button class="btn-contact" onclick="callFidele()">NOUS CONTACTER</button>
 </div>
 <!-- APPEL COTE FIDELE -->
-<div id="view-call-fidele" class="hidden" style="background:#000;height:100vh;padding-top:30px">
-<div style="color:#aaa">Appel en cours</div>
-<h2 style="margin:10px 0">CEH Call-Center</h2>
-<div id="fideleCallTimer" style="color:#00e676;font-size:28px">00:00</div>
-<div id="fideleCallStatus" style="margin-top:10px">Recherche d'un agent...</div>
-<div style="margin:80px auto;width:120px;height:120px;border:2px solid #00e676;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:50px">📞</div>
-<div id="fideleNoAgentBox" class="hidden" style="margin:20px">
-<p>aucun agent connecté, veuillez rappeler plus tard ou laisser un message vocal</p>
-<button id="btnVoice" style="background:#222;border:none;border-radius:50%;width:80px;height:80px;font-size:30px" 
-ontouchstart="startVoice(event)" ontouchend="stopVoice(event)" 
-onmousedown="startVoice(event)" onmouseup="stopVoice(event)">🎤</button>
-<p style="font-size:11px;color:#888">Maintiens appuyé pour enregistrer</p>
+<div id="view-call-fidele" class="hidden" style="background:#000;height:100vh;padding-top:30px;text-align:center">
+<div id="fideleCallTopStatus" style="color:#aaa">Appel en cours</div>
+<h2 style="margin:8px 0">CEH Call-Center</h2>
+<div id="fideleCallTimer" style="color:#00e676;font-size:32px;font-weight:800">00:00</div>
+<div id="fideleCallStatus" style="margin:12px 16px;color:#fff">aucun agent connecté, veuillez rappeler plus tard ou laisser un message vocal</div>
+
+<div style="margin:60px auto;width:130px;height:130px;border:2px solid #00e676;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:50px">📞</div>
+
+<!-- SEUL MICRO PRO - comme capture 2 -->
+<div id="fideleNoAgentBox" style="margin-top:30px">
+<div id="btnVoice" style="margin:0 auto;width:82px;height:82px;background:#1e2530;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none"
+ontouchstart="startVoice(event)" ontouchend="stopVoice(event)" onmousedown="startVoice(event)" onmouseup="stopVoice(event)">
+<!-- micro pro blanc -->
+<svg width="32" height="40" viewBox="0 0 24 24" fill="white"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 14 0h-2zM11 19v3h2v-3h-2z"/></svg>
 </div>
-<button class="btn btn-white" style="background:#ff3b30;color:#fff;border:none" onclick="endCallFidele()">Raccrocher</button>
+<p style="font-size:12px;color:#888;margin-top:10px">Maintiens appuyé pour enregistrer</p>
 </div>
 
+<button class="btn btn-white" style="background:#ff3b30;color:#fff;border:none;margin-top:30px;width:90%" onclick="endCallFidele()">Raccrocher</button>
+
+<!-- MODAL Envoyer ? -->
+<div id="voiceConfirmModal" class="hidden" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;z-index:999">
+<div class="card-dark" style="width:80%">
+<p style="font-size:18px">Envoyer ?</p>
+<div style="display:flex;gap:10px;margin-top:16px">
+<button class="btn btn-white" style="flex:1;background:#00e676;color:#000" onclick="confirmVoice(true)">Oui</button>
+<button class="btn btn-white" style="flex:1" onclick="confirmVoice(false)">Annuler</button>
+</div>
+</div>
+</div>
+</div>
 <!-- APPEL ENTRANT COTE AGENT -->
 <div id="view-incoming" class="hidden" style="background:#000;height:100vh;padding-top:40px">
 <h2 style="color:#00e676">📞 Appel entrant</h2>
@@ -96,11 +111,29 @@ onmousedown="startVoice(event)" onmouseup="stopVoice(event)">🎤</button>
 </div>
 </div>
 
-<div id="view-agent" class="hidden">
+<div id="view-agent" class="hidden" style="background:#000;min-height:100vh;padding:12px;text-align:center">
 <span class="back" onclick="show('view-landing')">← Retour</span>
-<div class="card-dark"><h3>Agent: <span id="agentWelcome"></span></h3><p id="agentState" style="color:#00e676">Hors ligne</p>
-<button class="btn btn-white" style="width:100%" onclick="renderFidelesAgent()">🔄 Actualiser</button>
-<div id="listFidelesAgent" style="margin-top:12px"></div>
+<h2 style="margin-top:20px">CEH - Espace Agent</h2>
+<p style="color:#888;font-size:12px">Les fidèles ne voient JAMAIS votre numéro perso</p>
+<div style="font-weight:800;margin:12px 0">CEH<br><span style="font-size:30px">🎧</span><br>CALL-CENTER</div>
+<h3 id="agentWelcome" style="color:#00e676">Yves Banza</h3>
+
+<div class="card-dark" style="text-align:left">
+<div id="agentStatusDot" style="margin-bottom:16px"><span style="color:#00e676">●</span> <span id="agentStatusText">Hors ligne</span></div>
+
+<button id="btnGoOnline" class="btn btn-white" style="width:100%;background:#00e676;color:#000;font-weight:800" onclick="goOnlinePro()">✅ Se mettre en ligne</button>
+<button class="btn btn-white" style="width:100%;margin-top:10px;background:#111;color:#ff4444" onclick="goOfflinePro()">Se déconnecter</button>
+
+<div style="display:flex;gap:10px;margin-top:14px">
+<button class="btn btn-white" style="flex:1;font-size:12px" onclick="modifierCode()">🔒 Modifier mon code</button>
+<button class="btn btn-white" style="flex:1;font-size:12px" onclick="verrouiller()">🔒 Verrouiller</button>
+</div>
+
+<button class="btn btn-white" style="width:100%;margin-top:14px" onclick="toggleBDFideles()">📖 BD FIDÈLES</button>
+<button class="btn btn-white" style="width:100%;margin-top:10px" onclick="renderFidelesAgent()">🔄 Actualiser</button>
+
+<div id="boxBDFideles" class="hidden" style="margin-top:16px;max-height:400px;overflow:auto"></div>
+</div>
 </div>
 </div>
 
@@ -229,6 +262,33 @@ async function callFidele(){
 function endCallFidele(){clearInterval(callTimer);show('view-fidele');}
 function startSync(){stopSync();syncInterval=setInterval(async()=>{let l=await getFidelesFromCloud();let b=document.getElementById('countBadge');if(b)b.textContent=l.length+' fidèles';let b2=document.getElementById('supCountBadge');if(b2)b2.textContent=l.length;},10000);}
 function stopSync(){if(syncInterval)clearInterval(syncInterval);}
+let pendingVoiceBlob=null;
+async function startVoice(e){e.preventDefault();try{let stream=await navigator.mediaDevices.getUserMedia({audio:true});mediaRecorder=new MediaRecorder(stream);voiceChunks=[];mediaRecorder.ondataavailable=ev=>voiceChunks.push(ev.data);mediaRecorder.start();document.getElementById('fideleCallStatus').textContent='🎤 Enregistrement en cours...';}catch(err){alert('Micro non autorisé');}}
+async function stopVoice(e){e.preventDefault();if(!mediaRecorder||mediaRecorder.state==='inactive')return;mediaRecorder.stop();mediaRecorder.onstop=()=>{pendingVoiceBlob=new Blob(voiceChunks,{type:'audio/webm'});document.getElementById('voiceConfirmModal').classList.remove('hidden');};}
+async function confirmVoice(yes){
+ document.getElementById('voiceConfirmModal').classList.add('hidden');
+ if(!yes){pendingVoiceBlob=null;document.getElementById('fideleCallStatus').textContent='Message annulé';return;}
+ if(!pendingVoiceBlob) return;
+ let reader=new FileReader(); reader.readAsDataURL(pendingVoiceBlob);
+ reader.onloadend=async()=>{
+   let all=await getFullFromCloud(); all.voicemails=all.voicemails||[];
+   let myId=localStorage.getItem('ceh_my_fidele_id'); let f=all.fideles.find(x=>x.id===myId);
+   all.voicemails.unshift({id:'voice_'+Date.now(),fideleName:f?f.name:'Inconnu',fidelePhone:f?f.phone:'',adresse:f?f.adresse:'',audio:reader.result,time:Date.now()});
+   await saveFullToCloud(all);
+   document.getElementById('fideleCallStatus').textContent='✅ Message vocal envoyé au superviseur';
+   pendingVoiceBlob=null;
+ };
+}
+function toggleBDFideles(){let box=document.getElementById('boxBDFideles');box.classList.toggle('hidden');if(!box.classList.contains('hidden'))renderFidelesAgent();}
+async function renderFidelesAgent(){
+ let all=await getFullFromCloud(); let list=all.fideles||[];
+ let box=document.getElementById('boxBDFideles'); 
+ if(list.length===0){box.innerHTML='<p>Aucun fidèle</p>'; return;}
+ box.innerHTML=list.map(f=>`<div style="border-bottom:1px solid #222;padding:8px 0;text-align:left"><b>${f.name}</b><br><small>${f.adresse||''}<br>${f.phone||''}</small><br><small style="color:#00e676">${f.date||''}</small></div>`).join('');
+ document.getElementById('countBadge')?.textContent=list.length+' fidèles';
+}
+function goOnlinePro(){goOnline();document.getElementById('agentStatusText').textContent='En ligne - En attente...';}
+function goOfflinePro(){goOffline();document.getElementById('agentStatusText').textContent='Hors ligne';}
 window.onload=()=>{ renderSelects(); show('view-landing'); };
 </script>
 </body>
