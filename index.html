@@ -43,6 +43,9 @@ h1{margin:0;font-size:26px;font-weight:800}.addr{color:#00e676;font-size:14px;ma
 <img class="logo-fidele" src="ceh_logo.png" alt="CEH">
 <div style="font-weight:800">CEH<br>CALL-CENTER</div>
 <div id="cardInscriptionFidele" class="card-dark" style="margin-top:16px">
+</div>
+<p id="msgInscriptionObligatoire" style="color:#ff4444;display:none;margin:10px 16px;font-weight:700">⚠️ Veuillez vous inscrire avant de nous contacter</p>
+<button class="btn-contact" onclick="callFidele()">NOUS CONTACTER</button>
 <h3>Inscription (une fois)</h3>
 <input id="fideleNameInput" class="input-dark" placeholder="Noms du fidèle">
 <input id="fideleAdresseInput" class="input-dark" placeholder="Adresse complète du fidèle">
@@ -78,20 +81,7 @@ onmousedown="startVoice(event)" onmouseup="stopVoice(event)">🎤</button>
 <button class="btn btn-white" style="background:#ff3b30;color:#fff" onclick="declineCall()">❌ Raccrocher</button>
 </div>
 </div>
-<p id="msgInscriptionObligatoire" style="color:#ff4444;display:none;margin:10px 16px;font-weight:700">⚠️ Veuillez vous inscrire avant de nous contacter</p>
-<div id="cardInscriptionFidele" class="card-dark" style="margin-top:16px">
-<h3>Inscription (une fois)</h3>
-<input id="fideleNameInput" class="input-dark" placeholder="Votre nom complet">
-<input id="fideleAdresseInput" class="input-dark" placeholder="Adresse complète">
-<input id="fidelePhoneInput" class="input-dark" placeholder="Numéro +243...">
-<button class="btn btn-white" style="width:100%" onclick="registerFideleOnline()">S'inscrire</button>
-<p id="msgFideleStatus" style="color:#00e676;display:none;margin-top:10px"></p>
-<p id="msgInscriptionObligatoire" style="color:#ff4444;display:none;margin-top:10px">⚠️ Veuillez vous inscrire avant de contacter le service CALL-CENTER</p>
-</div>
-<button class="btn-contact" onclick="callFidele()">NOUS CONTACTER</button>
-<div class="small-addr">Av. Suala n°6, Q/Makelele, C/Bandalungwa</div>
-<div class="small-ready" id="fideleStatus">Prêt à appeler</div>
-</div>
+
 
 <div id="view-agent-login" class="hidden">
 <span class="back" onclick="show('view-landing')">← Retour</span>
