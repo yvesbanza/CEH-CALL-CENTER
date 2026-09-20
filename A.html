@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CEH CALL-CENTER</title>
+<style>
+*{box-sizing:border-box}body{background:#000;color:#fff;font-family:system-ui;margin:0;padding:0;text-align:center}
+.hidden{display:none!important}
+.back{color:#9a9a9a;text-align:left;padding:12px 16px;display:block;cursor:pointer}
+.warn{border:2px solid #ffcc00;color:#ffcc00;border-radius:14px;padding:12px;margin:16px;text-align:left;font-size:13px;line-height:1.4}
+.warn a{color:#4da6ff}
+.logo-fidele{width:180px;margin:18px auto;display:block}
+.card-dark{background:#121212;border:1px solid #2a2a2a;border-radius:20px;padding:18px;margin:16px;text-align:left}
+.input-dark{width:100%;background:#000;border:1px solid #2a2a2a;border-radius:12px;padding:14px;color:#fff;margin-bottom:12px}
+.btn{width:92%;max-width:380px;padding:16px;border-radius:14px;border:1px solid #3a3a3a;font-weight:800;font-size:15px;margin:8px auto;display:block;cursor:pointer}
+.btn-white{background:#fff;color:#000}.btn-dark{background:#1c1c1e;color:#fff}
+.btn-contact{background:#fff;color:#000;border-radius:14px;padding:16px;font-weight:800;width:92%;max-width:380px;margin:12px auto;display:block;border:none;cursor:pointer}
+.btn-contact:disabled{background:#555;color:#999}
+.small-addr{font-size:12px;color:#aaa;margin-top:4px}.small-ready{font-size:12px;color:#00e676}
+.badge{background:#00e676;color:#000;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:800}
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="view-landing"><h1 style="margin-top:30px">CEH<br>CALL-CENTER</h1><p style="color:#00e676">Av. Suala n°6, Bandalungwa</p><button class="btn btn-white" onclick="show('view-fidele')">1. FIDÈLE</button><button class="btn btn-dark" onclick="show('view-agent-login')">2. AGENT</button><button class="btn btn-dark" onclick="show('view-sup-login')">3. SUPERVISEUR</button></div>
+
+<!-- FIDELE - ETAPE 1 CORRIGEE -->
+<div id="view-fidele" class="hidden">
+<span class="back" onclick="show('view-landing')">← Retour</span>
+
+<div class="warn">⚠️ <b>Si l'appel ne passe pas?</b><br>Sur Orange/Vodacom/Airtel, activez l'appli gratuite <b>1.1.1.1 WARP</b> sur Play Store, mettez-la en Connecté, puis réessayez.<br><a href="https://play.google.com/store/apps/details?id=com.cloudflare.onedotonedotonedotone" target="_blank">Télécharger 1.1.1.1 WARP</a></div>
+
+<img class="logo-fidele" src="ceh_logo.png" alt="CEH">
+<div style="font-weight:800">CEH<br>CALL-CENTER</div>
+
+<!-- FORMULAIRE INSCRIPTION -->
+<div id="cardInscriptionFidele" class="card-dark" style="margin-top:16px">
+<h3>Inscription (une fois)</h3>
+<input id="fideleNameInput" class="input-dark" placeholder="Votre nom complet">
+<input id="fideleAdresseInput" class="input-dark" placeholder="Adresse complète">
+<input id="fidelePhoneInput" class="input-dark" placeholder="Numéro +243...">
+<button id="btnInscrire" class="btn btn-white" style="width:100%;background:#2a2a2a;color:#fff;border:none" onclick="registerFideleOnline()">S'inscrire</button>
+<p style="font-size:11px;color:#777;margin-top:8px">Pour que l'agent puisse vous rappeler même si vous n'appelez pas.</p>
+<p id="msgFideleStatus" style="color:#00e676;display:none;margin-top:10px;font-weight:700"></p>
+</div>
+
+<!-- MESSAGE SI PAS INSCRIT -->
+<p id="msgInscriptionObligatoire" style="color:#ff4444;display:none;margin:10px 16px;font-weight:700">⚠️ Veuillez vous inscrire avant de nous contacter</p>
+
+<button class="btn-contact" onclick="callFidele()">NOUS CONTACTER</button>
+<div class="small-addr">Av. Suala n°6, Q/Makelele, C/Bandalungwa</div>
+<div class="small-ready" id="fideleStatus">Prêt à appeler</div>
+</div>
+
+<!-- AGENT / SUP MINIMAL POUR BD -->
+<div id="view-agent-login" class="hidden"><span class="back" onclick="show('view-landing')">← Retour</span><div class="card-dark" style="margin-top:40px"><h3>Agent</h3><select id="agentSelectLogin" class="input-dark"></select><input id="agentPin" class="input-dark" type="password" placeholder="1234"><button class="btn btn-white" style="width:100%" onclick="loginAgent()">Déverrouiller</button><p id="agentLoginMsg" style="color:#ff5555;text-align:center"></p></div></div>
+<div id="view-agent" class="hidden"><span class="back" onclick="show('view-landing')">← Retour</span><div class="card-dark"><h3>Agent: <span id="agentWelcome"></span> <span id="countBadge" class="badge">0 fidèles</span></h3><button class="btn btn-white" style="width:100%" onclick="showBdFideles()">📖 Voir BD Fidèles</button><button class="btn btn-dark" style="width:100%" onclick="renderFidelesAgent()">🔄 Actualiser</button><div id="listFidelesAgent" style="margin-top:12px"></div></div></div>
+<div id="view-sup-login" class="hidden"><span class="back" onclick="show('view-landing')">← Retour</span><div class="card-dark" style="margin-top:40px"><h3>Superviseur</h3><input id="supPin" class="input-dark" type="password" placeholder="ceh2024"><button class="btn btn-white" style="width:100%" onclick="loginSup()">Entrer</button></div></div>
+<div id="view-superviseur" class="hidden"><span class="back" onclick="show('view-landing')">← Retour</span><h3>Superviseur <span id="supCountBadge" class="badge">0</span></h3><div id="supContent" style="padding:0 16px"></div></div>
+
+<script>
+const JSONBIN_BIN_ID = "6aaef011ffd5d160531a5b2c";
+const JSONBIN_API_KEY = "$2a$10$kRVjy4XCDc9xbJlkmJ0DtuWoWiYq0wJHSLeu9rUkKiH8ep77ZbP9a";
+const LS_AGENTS='ceh_agents_v2';
+let agents=JSON.parse(localStorage.getItem(LS_AGENTS)||'[{"name":"Yves Banza","phone":"+243838779476","code":"101"}]');
+let agentPins=JSON.parse(localStorage.getItem('ceh_pins')||'{"101":"1234"}');
+let currentAgent=null;
+
+function show(id){
+  document.querySelectorAll('[id^=view-]').forEach(d=>d.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  if(id==='view-agent-login') renderSelects();
+  if(id==='view-agent') renderFidelesAgent();
+  if(id==='view-superviseur') renderSup();
+  if(id==='view-fidele') checkFideleDejaInscrit();
+}
+function renderSelects(){const s=document.getElementById('agentSelectLogin');s.innerHTML='';agents.forEach(a=>{let o=document.createElement('option');o.value=a.code;o.textContent='Agent '+a.code+' - '+a.name;s.appendChild(o);});}
+function loginAgent(){const code=document.getElementById('agentSelectLogin').value;if(agentPins[code]!==document.getElementById('agentPin').value){document.getElementById('agentLoginMsg').textContent='PIN faux';return;}currentAgent=agents.find(a=>a.code==code);document.getElementById('agentWelcome').textContent=currentAgent.name;show('view-agent');}
+function loginSup(){if(document.getElementById('supPin').value!=="ceh2024") return alert('PIN faux');show('view-superviseur');}
+
+// --- CLOUD ---
+async function getFidelesFromCloud(){try{let r=await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`,{headers:{"X-Master-Key":JSONBIN_API_KEY}});let d=await r.json();return d.record.fideles||[];}catch(e){return [];}}
+async function saveFidelesToCloud(list){let r=await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`,{method:"PUT",headers:{"Content-Type":"application/json","X-Master-Key":JSONBIN_API_KEY},body:JSON.stringify({fideles:list})});return r.ok;}
+
+// --- ETAPE 1: INSCRIPTION ---
+function checkFideleDejaInscrit(){
+  let myId=localStorage.getItem('ceh_my_fidele_id');
+  if(myId){
+    document.getElementById('cardInscriptionFidele').style.display='none';
+    document.getElementById('msgFideleStatus').style.display='block';
+    document.getElementById('msgFideleStatus').textContent='✅ Vous êtes déjà inscrit';
+  }
+}
+async function registerFideleOnline(){
+  let n=document.getElementById('fideleNameInput').value.trim();
+  let adr=document.getElementById('fideleAdresseInput').value.trim();
+  let tel=document.getElementById('fidelePhoneInput').value.trim();
+  if(!n||!adr||!tel){alert('Remplis les 3 cases: Noms, Adresse, Numéro');return;}
+  let btn=document.getElementById('btnInscrire');btn.textContent='Enregistrement...';btn.disabled=true;
+  for(let i=0;i<3;i++){
+    let list=await getFidelesFromCloud();
+    if(list.find(f=>f.phone===tel)){
+      localStorage.setItem('ceh_my_fidele_id', list.find(f=>f.phone===tel).id);
+      document.getElementById('cardInscriptionFidele').style.display='none';
+      document.getElementById('msgFideleStatus').style.display='block';
+      document.getElementById('msgFideleStatus').textContent='✅ Déjà inscrit: '+n;
+      document.getElementById('msgInscriptionObligatoire').style.display='none';
+      btn.textContent="S'inscrire";btn.disabled=false;return;
+    }
+    let nouveau={id:tel.replace(/\D/g,'')+'_'+Date.now(),name:n,adresse:adr,phone:tel,registered:Date.now()};
+    list.unshift(nouveau);
+    if(await saveFidelesToCloud(list)){
+      localStorage.setItem('ceh_my_fidele_id', nouveau.id);
+      document.getElementById('cardInscriptionFidele').style.display='none';
+      document.getElementById('msgFideleStatus').style.display='block';
+      document.getElementById('msgFideleStatus').textContent='✅ Inscrit avec succès: '+n+' - Vos infos sont dans BD Fidèles';
+      document.getElementById('msgInscriptionObligatoire').style.display='none';
+      btn.textContent="S'inscrire";btn.disabled=false;
+      return;
+    }
+    await new Promise(r=>setTimeout(r,700));
+  }
+  alert('Erreur réseau, réessaye');btn.textContent="S'inscrire";btn.disabled=false;
+}
+function callFidele(){
+  let myId=localStorage.getItem('ceh_my_fidele_id');
+  if(!myId){
+    document.getElementById('msgInscriptionObligatoire').style.display='block';
+    document.getElementById('msgInscriptionObligatoire').scrollIntoView({behavior:'smooth'});
+    return;
+  }
+  document.getElementById('msgInscriptionObligatoire').style.display='none';
+  window.location.href='tel:+243838779476';
+}
+
+// --- BD FIDELES (seulement Agent/Sup) ---
+async function renderFidelesAgent(){let list=await getFidelesFromCloud();document.getElementById('countBadge').textContent=list.length+' fidèles';}
+async function showBdFideles(){let list=await getFidelesFromCloud();let html=`<div id="bdModal" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#000;z-index:9999;overflow:auto;padding:15px"><span onclick="document.getElementById('bdModal').remove()" style="color:#aaa;cursor:pointer">← Fermer</span><h3>📖 BD Fidèles - ${list.length}</h3><input id="searchBd" class="input-dark" placeholder="Rechercher nom, adresse, téléphone" oninput="filterBd()" style="position:sticky;top:0"><div id="bdList">`;list.forEach(f=>{html+=`<div class="card-dark bd-item" data-search="${(f.name+' '+f.adresse+' '+f.phone).toLowerCase()}"><b>${f.name}</b><br>📍 ${f.adresse}<br>📞 ${f.phone}<br><small>${new Date(f.registered).toLocaleString()}</small></div>`});html+=`</div></div>`;document.body.insertAdjacentHTML('beforeend',html);}
+function filterBd(){let q=document.getElementById('searchBd').value.toLowerCase();document.querySelectorAll('.bd-item').forEach(el=>{el.style.display=el.dataset.search.includes(q)?'block':'none';});}
+async function renderSup(){let list=await getFidelesFromCloud();document.getElementById('supCountBadge').textContent=list.length;document.getElementById('supContent').innerHTML=`<div style="background:gold;color:#000;padding:12px;border-radius:10px;margin:10px 0">${list.length} fidèles au total dans BD</div><button class="btn btn-white" style="width:100%" onclick="showBdFideles()">📖 Voir BD Fidèles complète</button>`;}
+
+window.onload=()=>{renderSelects();show('view-landing');}
+</script>
+</body>
+  </html>
