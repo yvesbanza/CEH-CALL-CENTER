@@ -152,6 +152,12 @@ ontouchstart="startVoice(event)" ontouchend="stopVoice(event)" onmousedown="star
 <span class="back" onclick="show('view-landing')">← Retour</span>
 <h3 style="text-align:left;padding:0 16px">Tableau de bord Superviseur</h3>
 <div id="supContent" style="padding:0 6px"></div>
+
+<div style="padding:10px 16px;display:flex;gap:10px">
+<button class="btn btn-white" style="flex:1" onclick="renderSup()">👥 Agents</button>
+<button class="btn btn-white" style="flex:1;background:#1e2530" onclick="renderBDVoices()">🎤 BD Voices</button>
+</div>
+<div id="boxBDVoices" class="card-dark hidden" style="margin:10px 16px;text-align:left;max-height:500px;overflow:auto"></div>
 </div>
 
 <script>
@@ -216,6 +222,20 @@ async function showBdFideles(){let list=await getFidelesFromCloud();let html=`<d
 function filterBd(){let q=document.getElementById('searchBd').value.toLowerCase();document.querySelectorAll('.bd-item').forEach(el=>{el.style.display=el.dataset.search.includes(q)?'block':'none';});}
 function goOnline(){startSync();} function goOffline(){stopSync();}
 async function renderSup(){let list=await getFidelesFromCloud();document.getElementById('supCountBadge').textContent=list.length;document.getElementById('supContent').innerHTML=`<div style="background:gold;color:#000;padding:12px;border-radius:10px">${list.length} fidèles</div><button class="btn btn-white" onclick="showBdFideles()">Voir BD</button>`;}
+async function renderBDVoices(){
+ let all=await getFullFromCloud();
+ let list=all.voicemails||[];
+ let box=document.getElementById('boxBDVoices');
+ box.classList.remove('hidden');
+ if(list.length===0){box.innerHTML='<p>Aucun message vocal</p>';return;}
+ box.innerHTML='<h3>🎤 BD Voices ('+list.length+')</h3>'+list.map(v=>`
+  <div style="border-bottom:1px solid #222;padding:10px 0">
+   <b>${v.fideleName}</b> - ${v.fidelePhone}<br>
+   <small>${v.adresse||''}</small><br>
+   <audio controls src="${v.audio}" style="width:100%;margin-top:6px"></audio><br>
+   <small style="color:#888">${new Date(v.time).toLocaleString()}</small>
+  </div>`).join('');
+  }
 function checkFideleDejaInscrit(){
   let myId=localStorage.getItem('ceh_my_fidele_id');
   if(myId){
