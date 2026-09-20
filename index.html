@@ -44,6 +44,15 @@ h1{margin:0;font-size:26px;font-weight:800}.addr{color:#00e676;font-size:14px;ma
 <div style="font-weight:800">CEH<br>CALL-CENTER</div>
 <div id="cardInscriptionFidele" class="card-dark" style="margin-top:16px">
 <h3>Inscription (une fois)</h3>
+<input id="fideleNameInput" class="input-dark" placeholder="Noms du fidèle">
+<input id="fideleAdresseInput" class="input-dark" placeholder="Adresse complète du fidèle">
+<input id="fidelePhoneInput" class="input-dark" placeholder="Numéro de téléphone du fidèle">
+<button class="btn btn-white" style="width:100%" onclick="registerFideleOnline()">S'inscrire</button>
+<p id="msgFideleStatus" style="color:#00e676;display:none;margin-top:10px"></p>
+</div>
+<p id="msgInscriptionObligatoire" style="color:#ff4444;display:none;margin:10px 16px;font-weight:700">⚠️ Veuillez vous inscrire avant de nous contacter</p>
+<div id="cardInscriptionFidele" class="card-dark" style="margin-top:16px">
+<h3>Inscription (une fois)</h3>
 <input id="fideleNameInput" class="input-dark" placeholder="Votre nom complet">
 <input id="fideleAdresseInput" class="input-dark" placeholder="Adresse complète">
 <input id="fidelePhoneInput" class="input-dark" placeholder="Numéro +243...">
